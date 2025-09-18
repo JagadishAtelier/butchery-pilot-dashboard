@@ -8,6 +8,7 @@ import {
   Filter,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { getCategoryById } from "../../api/categoryApi";
 import { useEffect, useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -26,20 +27,33 @@ export default function ProductList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProductsWithCategories = async () => {
       try {
-        const data = await getAllProducts();
-        setProducts(data.data);
+        // 1️⃣ Get all products
+        const productResponse = await getAllProducts();
+        const products = productResponse.data;
+  
+        // 2️⃣ Fetch category details for each product
+        const productsWithCategory = await Promise.all(
+          products.map(async (product) => {
+            const categoryData = await getCategoryById(product.category); // product.category has the category ID
+            return { ...product, categoryData }; // merge category data into product
+          })
+        );
+  
+        // 3️⃣ Set products with category info
+        setProducts(productsWithCategory);
       } catch (error) {
-        console.error("Failed to fetch products", error);
+        console.error("Failed to fetch products or categories", error);
         toast.error("Failed to load products");
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProducts();
+  
+    fetchProductsWithCategories();
   }, []);
+  
 
   console.log(products);
 
@@ -250,8 +264,8 @@ export default function ProductList() {
               <th className="p-3">Images</th>
               <th className="p-3">Name</th>
               <th className="p-3">Category</th>
-              <th className="p-3">Stock</th>
-              <th className="p-3">Price</th>
+              <th className="p-3">Product Id</th>
+              <th className="p-3">Price/kg</th>
               <th className="p-3">Status</th>
               <th className="p-3">Actions</th>
             </tr>
@@ -287,9 +301,12 @@ export default function ProductList() {
                     ))}
                   </td>
                   <td className="p-3 whitespace-nowrap">{product.name}</td>
-                  <td className="p-3 whitespace-nowrap">{product.category}</td>
-                  <td className="p-3 whitespace-nowrap">{product.stock}</td>
-                  <td className="p-3 whitespace-nowrap">{product.price}</td>
+                  <td className="p-3 whitespace-nowrap">{product.categoryData.name}</td>
+                  <td className="p-3 whitespace-nowrap">{product.productId}</td>
+                  <td className="p-3 whitespace-nowrap">
+  {product.weightOptions.find((w) => w.weight === 1000)?.price || "N/A"}
+</td>
+
                   <td
                     className={`p-3 font-medium whitespace-nowrap ${
                       product.status === "Active"
