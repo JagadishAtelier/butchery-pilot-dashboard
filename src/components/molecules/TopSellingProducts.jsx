@@ -1,34 +1,34 @@
 import { ChevronRight } from "lucide-react";
 
 const topProducts = [
-  {
-    id: 1,
-    title: 'Tshirt Levis',
-    price: '₹ 4990',
-    image: '/tshirt.jpg',
-    sales: 9000
-  },
-  {
-    id: 2,
-    title: 'Long jeans jacket',
-    price: '₹ 1299',
-    image: '/jeans-jacket.jpg',
-    sales: 8895
-  },
-  {
-    id: 3,
-    title: 'Fullcap',
-    price: '₹ 299',
-    image: '/fullcap.jpg',
-    sales: 7657
-  },
-  {
-    id: 4,
-    title: 'Adidas pants',
-    price: '₹ 899',
-    image: '/adidas-pants.jpg',
-    sales: 3000
-  },
+  // {
+  //   id: 1,
+  //   title: 'Tshirt Levis',
+  //   price: '₹ 4990',
+  //   image: '/tshirt.jpg',
+  //   sales: 9000
+  // },
+  // {
+  //   id: 2,
+  //   title: 'Long jeans jacket',
+  //   price: '₹ 1299',
+  //   image: '/jeans-jacket.jpg',
+  //   sales: 8895
+  // },
+  // {
+  //   id: 3,
+  //   title: 'Fullcap',
+  //   price: '₹ 299',
+  //   image: '/fullcap.jpg',
+  //   sales: 7657
+  // },
+  // {
+  //   id: 4,
+  //   title: 'Adidas pants',
+  //   price: '₹ 899',
+  //   image: '/adidas-pants.jpg',
+  //   sales: 3000
+  // },
 ];
 
 export default function TopSellingProducts() {
@@ -40,6 +40,11 @@ export default function TopSellingProducts() {
           See all <ChevronRight size={16} />
         </a>
       </div>
+      {topProducts.length === 0 ? (
+        <p className="text-gray-500 text-sm text-center py-4">
+          No top selling products available.
+        </p>
+      ) :(
 
       <ul className="space-y-3">
         {topProducts.map((product, index) => (
@@ -68,6 +73,7 @@ export default function TopSellingProducts() {
           </li>
         ))}
       </ul>
+      )}
     </div>
   );
 }

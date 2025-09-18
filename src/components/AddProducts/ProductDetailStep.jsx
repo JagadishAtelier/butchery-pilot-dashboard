@@ -131,7 +131,7 @@ const ProductDetailStep = ({
           </div>
 
                     {/* Certifications */}
-                    <div className="flex flex-col xl:flex-row items-start">
+                    {/* <div className="flex flex-col xl:flex-row items-start">
             <div className="w-full xl:w-64 xl:mr-10">
               <div className="font-medium">Certifications</div>
             </div>
@@ -161,7 +161,7 @@ const ProductDetailStep = ({
                 </button>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Product Video */}
           <div className="flex flex-col xl:flex-row items-start">

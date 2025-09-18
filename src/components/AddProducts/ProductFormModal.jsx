@@ -28,6 +28,7 @@ const ProductFormModal = () => {
   // Step-wise data
   const [productPhotos, setProductPhotos] = useState([]);
   const [productInfo, setProductInfo] = useState({
+    productId: "", 
     productName: "",
     category: "",
     subcategory: "",
@@ -178,6 +179,10 @@ const removeWeightOption = (id) => {
           toast.error("Category is required.");
           return;
         }
+        if (!productInfo.subcategory) {
+          toast.error("Subcategory is required."); // ✅ new validation
+          return;
+        }
         break;
       case 2:
         if (!productDetails.description) {
@@ -242,7 +247,7 @@ const removeWeightOption = (id) => {
       );
 
       const finalData = {
-        productId: uuidv4(),
+        productId: productInfo.productId, // ✅ use entered value
         images: uploadedPhotoUrls,
         name: productInfo.productName,
         category: productInfo.category, // ObjectId
@@ -299,6 +304,12 @@ const removeWeightOption = (id) => {
       )}
       {currentStep === 1 && (
         <ProductInfoStep
+        productId={productInfo.productId}
+        setProductId={(val) =>
+          handleProductInfoChange({
+            target: { name: "productId", value: val },
+          })
+        }
           productName={productInfo.productName}
           setProductName={(val) =>
             handleProductInfoChange({
