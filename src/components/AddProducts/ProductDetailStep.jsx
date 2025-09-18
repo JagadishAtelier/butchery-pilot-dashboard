@@ -3,6 +3,17 @@ import { ChevronDown, Paperclip, Plus } from "lucide-react";
 const ProductDetailStep = ({
   description,
   setDescription,
+  cutType,
+  setCutType,
+  shelfLife,
+  setShelfLife,
+  storageInstructions,
+  setStorageInstructions,
+  certifications,
+  addCertification,
+  removeCertification,
+  videoUrl,
+  setVideoUrl,
   onAddVideoClick,
 }) => {
   console.log(description);
@@ -68,6 +79,87 @@ const ProductDetailStep = ({
               <p className="text-right text-xs text-gray-500 mt-1">
                 {description?.length}/2000
               </p>
+            </div>
+          </div>
+
+                    {/* Cut Type */}
+                    <div className="flex flex-col xl:flex-row items-start">
+            <div className="w-full xl:w-64 xl:mr-10">
+              <div className="font-medium">Cut Type</div>
+            </div>
+            <div className="mt-3 xl:mt-0 flex-1 w-full">
+              <input
+                type="text"
+                value={cutType}
+                onChange={(e) => setCutType(e.target.value)}
+                placeholder="e.g., Boneless, Whole, Sliced"
+                className="w-full rounded-md border px-3 py-2 bg-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              />
+            </div>
+          </div>
+
+                    {/* Shelf Life */}
+                    <div className="flex flex-col xl:flex-row items-start">
+            <div className="w-full xl:w-64 xl:mr-10">
+              <div className="font-medium">Shelf Life</div>
+            </div>
+            <div className="mt-3 xl:mt-0 flex-1 w-full">
+              <input
+                type="text"
+                value={shelfLife}
+                onChange={(e) => setShelfLife(e.target.value)}
+                placeholder="e.g., 3 days refrigerated"
+                className="w-full rounded-md border px-3 py-2 bg-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              />
+            </div>
+          </div>
+
+                    {/* Storage Instructions */}
+                    <div className="flex flex-col xl:flex-row items-start">
+            <div className="w-full xl:w-64 xl:mr-10">
+              <div className="font-medium">Storage Instructions</div>
+            </div>
+            <div className="mt-3 xl:mt-0 flex-1 w-full">
+              <textarea
+                value={storageInstructions}
+                onChange={(e) => setStorageInstructions(e.target.value)}
+                rows={3}
+                placeholder="e.g., Keep refrigerated at 0-4°C"
+                className="w-full rounded-md border px-3 py-2 bg-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              />
+            </div>
+          </div>
+
+                    {/* Certifications */}
+                    <div className="flex flex-col xl:flex-row items-start">
+            <div className="w-full xl:w-64 xl:mr-10">
+              <div className="font-medium">Certifications</div>
+            </div>
+            <div className="mt-3 xl:mt-0 flex-1 w-full">
+              <div className="flex flex-wrap gap-2">
+                {certifications?.map((cert, idx) => (
+                  <div key={idx} className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-md">
+                    <span>{cert}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeCertification(cert)}
+                      className="text-red-500 font-bold"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cert = prompt("Enter certification name:");
+                    if (cert) addCertification(cert);
+                  }}
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50"
+                >
+                  <Plus className="size-4" /> Add
+                </button>
+              </div>
             </div>
           </div>
 

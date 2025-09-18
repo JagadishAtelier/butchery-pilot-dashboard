@@ -33,10 +33,17 @@ const ProductFormModal = () => {
     subcategory: "",
   });
   const [productDetails, setProductDetails] = useState({
-    condition: "",
     description: "",
     videoUrl: "",
+    cutType: "",
+    shelfLife: "",
+    storageInstructions: "",
+    certifications: [],
   });
+  const [weightOptions, setWeightOptions] = useState([
+    { id: Date.now(), weight: "", price: "", stock: "" },
+  ]);
+
   const [variants, setVariants] = useState([]);
   const [productManagementData, setProductManagementData] = useState({
     isActive: false,
@@ -71,6 +78,35 @@ const ProductFormModal = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  // Certifications
+const addCertification = (cert) => {
+  setProductDetails((prev) => ({
+    ...prev,
+    certifications: [...prev.certifications, cert],
+  }));
+};
+
+const removeCertification = (cert) => {
+  setProductDetails((prev) => ({
+    ...prev,
+    certifications: prev.certifications.filter((c) => c !== cert),
+  }));
+};
+
+// Weight Options
+const addWeightOption = () => {
+  setWeightOptions([...weightOptions, { id: Date.now(), weight: "", price: "", stock: "" }]);
+};
+
+const updateWeightOption = (id, field, value) => {
+  setWeightOptions(
+    weightOptions.map((opt) => (opt.id === id ? { ...opt, [field]: value } : opt))
+  );
+};
+
+const removeWeightOption = (id) => {
+  setWeightOptions(weightOptions.filter((opt) => opt.id !== id));
+};
 
   const handleProductDescriptionChange = (value) =>
     setProductDetails((prev) => ({ ...prev, description: value }));
@@ -206,24 +242,33 @@ const ProductFormModal = () => {
       );
 
       const finalData = {
-        id: uuidv4(),
+        productId: uuidv4(),
         images: uploadedPhotoUrls,
         name: productInfo.productName,
-        category: productInfo.category,
+        category: productInfo.category, // ObjectId
         subcategory: productInfo.subcategory,
         productVideoUrl: productDetails.videoUrl,
+        description: productDetails.description,
+        cutType: productDetails.cutType,
+        shelfLife: productDetails.shelfLife,
+        storageInstructions: productDetails.storageInstructions,
+        certifications: productDetails.certifications,
         variant: flattenedVariants,
+        unit: weightShippingData.unit || "kg",
+        weightOptions: weightOptions.map((w) => ({
+          weight: Number(w.weight),
+          price: Number(w.price),
+          stock: Number(w.stock || 0),
+        })),
         shipping: {
           weight: Number(weightShippingData.weight),
           size: {
             width: Number(weightShippingData.dimensions.width),
             height: Number(weightShippingData.dimensions.height),
-            length: Number(weightShippingData.dimensions?.length),
-            unit: "inch",
+            length: Number(weightShippingData.dimensions.length),
+            unit: weightShippingData.dimensionsUnit || "inch",
           },
         },
-        stock: Number(productManagementData.stock || 0),
-        price: "0",
         SKU: productManagementData.sku || "",
         status: productManagementData.isActive ? "Active" : "Inactive",
       };
@@ -284,15 +329,29 @@ const ProductFormModal = () => {
       )}
       {currentStep === 2 && (
         <ProductDetailStep
-          condition={productDetails.condition}
-          setCondition={handleConditionChange}
-          description={productDetails.description}
-          setDescription={handleProductDescriptionChange}
-          videoUrl={productDetails.videoUrl}
-          setVideoUrl={handleVideoUrlChange}
-          onAddVideoClick={() => alert("Video upload coming soon!")}
-          handleChange={handleProductDetailChange}
-        />
+  description={productDetails.description}
+  setDescription={handleProductDescriptionChange}
+  videoUrl={productDetails.videoUrl}
+  setVideoUrl={handleVideoUrlChange}
+  onAddVideoClick={() => alert("Video upload coming soon!")}
+  handleChange={handleProductDetailChange}
+  cutType={productDetails.cutType}
+  setCutType={(val) =>
+    setProductDetails((prev) => ({ ...prev, cutType: val }))
+  }
+  shelfLife={productDetails.shelfLife}
+  setShelfLife={(val) =>
+    setProductDetails((prev) => ({ ...prev, shelfLife: val }))
+  }
+  storageInstructions={productDetails.storageInstructions}
+  setStorageInstructions={(val) =>
+    setProductDetails((prev) => ({ ...prev, storageInstructions: val }))
+  }
+  certifications={productDetails.certifications}
+  addCertification={addCertification}
+  removeCertification={removeCertification}
+/>
+
       )}
       {currentStep === 3 && (
         <>
@@ -320,37 +379,14 @@ const ProductFormModal = () => {
       )}
 
       {currentStep === 5 && (
-       <WeightShippings
+        <WeightShippings
   onChange={handleWeightShippingChange}
-  weight={weightShippingData.weight}
-  setWeight={(val) =>
-    setWeightShippingData((prev) => ({ ...prev, weight: val }))
-  }
-  weightUnit={weightShippingData.weightUnit}
-  setWeightUnit={(val) =>
-    setWeightShippingData((prev) => ({ ...prev, weightUnit: val }))
-  }
-  dimensions={weightShippingData.dimensions}
-  setDimensions={(dims) =>
-    setWeightShippingData((prev) => ({ ...prev, dimensions: dims }))
-  }
-  dimensionsUnit={weightShippingData.dimensionsUnit}
-  setDimensionsUnit={(val) =>
-    setWeightShippingData((prev) => ({ ...prev, dimensionsUnit: val }))
-  }
-  insurance={weightShippingData.insurance}
-  setInsurance={(val) =>
-    setWeightShippingData((prev) => ({ ...prev, insurance: val }))
-  }
-  shippingService={weightShippingData.shippingService}
-  setShippingService={(val) =>
-    setWeightShippingData((prev) => ({ ...prev, shippingService: val }))
-  }
-  preOrder={weightShippingData.preOrder}
-  setPreOrder={(val) =>
-    setWeightShippingData((prev) => ({ ...prev, preOrder: val }))
-  }
+  weightShippingData={weightShippingData}
+  setWeightShippingData={setWeightShippingData}
+  weightOptions={weightOptions}
+  setWeightOptions={setWeightOptions}
 />
+
 
       )}
 

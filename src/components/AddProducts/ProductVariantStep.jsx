@@ -1,6 +1,6 @@
 import { ChevronDown, Plus } from "lucide-react";
 
-const ProductVariantStep = ({ onAddVariantClick }) => {
+const ProductVariantStep = ({ variants, onAddVariantClick, onRemoveVariant, onUpdateVariantName, onAddOption, onRemoveOption }) => {
   return (
     <div className="relative p-5 mt-8">
       <div className="before:absolute before:inset-0 before:mx-3 before:-mb-3 before:border before:border-foreground/10 before:bg-background/30 before:shadow-md before:z-[-1] before:rounded-xl after:absolute after:inset-0 after:border after:border-foreground/10 after:bg-background after:shadow-md after:rounded-xl after:z-[-1] after:backdrop-blur-md" />

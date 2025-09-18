@@ -1,16 +1,47 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, X, Plus } from "lucide-react";
 
-const ProductVariant = ({ variantName = "Variant 1", onRemove,onNameChange  }) => {
+const ProductVariant = ({
+  variantName = "",
+  options = [],
+  onRemove,
+  onNameChange,
+  onOptionsChange,
+}) => {
   const [variantValue, setVariantValue] = useState("");
+  const [variantOptions, setVariantOptions] = useState(options);
 
-useEffect(() => {
+  useEffect(() => {
     setVariantValue(variantName);
   }, [variantName]);
+
+  useEffect(() => {
+    setVariantOptions(options);
+  }, [options]);
 
   const handleChange = (e) => {
     setVariantValue(e.target.value);
     onNameChange && onNameChange(e.target.value);
+  };
+
+  const handleOptionChange = (index, value) => {
+    const updatedOptions = [...variantOptions];
+    updatedOptions[index].value = value;
+    setVariantOptions(updatedOptions);
+    onOptionsChange && onOptionsChange(updatedOptions);
+  };
+
+  const addOption = () => {
+    if (variantOptions.length >= 5) return;
+    const newOptions = [...variantOptions, { id: Date.now(), value: "" }];
+    setVariantOptions(newOptions);
+    onOptionsChange && onOptionsChange(newOptions);
+  };
+
+  const removeOption = (index) => {
+    const newOptions = variantOptions.filter((_, i) => i !== index);
+    setVariantOptions(newOptions);
+    onOptionsChange && onOptionsChange(newOptions);
   };
 
   return (
@@ -22,53 +53,70 @@ useEffect(() => {
         </div>
 
         <div className="mt-5 flex flex-col gap-5">
+          {/* Variant Name */}
           <div className="flex flex-col xl:flex-row items-start">
             <div className="w-full xl:w-64 xl:mr-10">
               <div className="text-left">
-                <div className="font-medium">Variant 1</div>
+                <div className="font-medium">Variant Name</div>
                 <div className="mt-3 text-xs leading-relaxed text-gray-500">
-                  Add the types of variants and options, you can add up to 5 options.
+                  Add the name of the variant (e.g., Size, Cut).
                 </div>
               </div>
             </div>
 
             <div className="mt-3 w-full flex-1 xl:mt-0">
-              <div className="relative rounded-lg border border-gray-200 bg-gray-50 py-10 pl-5 pr-5 xl:pr-10">
+              <div className="relative rounded-lg border border-gray-200 bg-gray-50 py-2 pl-3 pr-5 xl:pr-10 flex items-center">
+                <input
+                  type="text"
+                  value={variantValue}
+                  onChange={handleChange}
+                  placeholder="e.g., Size"
+                  maxLength={14}
+                  className="h-10 flex-1 rounded border border-r-0 bg-white px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <div className="bg-gray-100 border border-l-0 text-gray-500 flex w-16 items-center justify-center rounded-md">
+                  {variantValue.length}/14
+                </div>
                 <button
-                  className="absolute right-4 top-4 text-gray-400 hover:text-red-500"
+                  className="ml-2 text-gray-400 hover:text-red-500"
                   onClick={onRemove}
                   title="Remove Variant"
                 >
                   <X className="size-5 stroke-[1.5]" />
                 </button>
-
-                <div className="flex flex-col gap-5">
-                  <div className="grid gap-5 sm:grid-cols-12">
-                    <div className="col-span-2 text-sm font-medium text-right mt-2">
-                      Name
-                    </div>
-                    <div className="col-span-10 grid gap-5">
-                      <div className="grid gap-5 sm:grid-cols-12">
-                        <div className="col-span-10 flex">
-                          <input
-                                type="text"
-                                value={variantValue}
-                                onChange={handleChange}
-                                placeholder="e.g., Size"
-                                maxLength={14} 
-                                className="h-10 w-full rounded border border-r-0 bg-white px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                            <div className="bg-gray-100 border border-l-0 text-gray-500 flex w-16 items-center justify-center rounded-md">
-                                {variantValue.length}/14 {/* Dynamic count */}
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
               </div>
             </div>
+          </div>
+
+          {/* Variant Options */}
+          <div className="flex flex-col gap-3">
+            {variantOptions.map((opt, index) => (
+              <div key={opt.id} className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  value={opt.value}
+                  placeholder={`Option ${index + 1}`}
+                  className="flex-1 h-10 rounded border px-3 py-2 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  onChange={(e) => handleOptionChange(index, e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeOption(index)}
+                  className="px-2 py-1 text-red-600 border border-red-400 rounded-md hover:bg-red-50"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addOption}
+              className="inline-flex items-center gap-1 mt-2 px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 text-sm"
+              disabled={variantOptions.length >= 5}
+            >
+              <Plus className="size-4" />
+              Add Option
+            </button>
           </div>
         </div>
       </div>

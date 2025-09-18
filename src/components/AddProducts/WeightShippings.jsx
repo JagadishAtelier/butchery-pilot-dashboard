@@ -3,32 +3,47 @@ import React from 'react';
 
 const WeightShippings = ({
   onChange,
-  weight,
-  setWeight,
-  weightUnit,
-  setWeightUnit,
-  dimensions,
-  setDimensions,
-  insurance,
-  setInsurance,
-  shippingService,
-  setShippingService,
-  preOrder,
-  setPreOrder,
-  dimensionsUnit,
-  setDimensionsUnit
+  weightShippingData,
+  setWeightShippingData,
+  weightOptions,
+  setWeightOptions,
 }) => {
+
   const emitChange = (updated = {}) => {
     onChange?.({
-      weight,
-      weightUnit,
-      dimensions,
-      insurance,
-      shippingService,
-      preOrder,
-      dimensionsUnit,
+      weightShippingData,
+      weightOptions,
       ...updated,
     });
+  };
+
+  // Handle Weight Option Change
+  const updateWeightOption = (id, field, value) => {
+    const updated = weightOptions.map((opt) =>
+      opt.id === id ? { ...opt, [field]: value } : opt
+    );
+    setWeightOptions(updated);
+    emitChange({ weightOptions: updated });
+  };
+
+  const addWeightOption = () => {
+    const newOption = { id: Date.now(), weight: "", price: "", stock: "" };
+    const updated = [...weightOptions, newOption];
+    setWeightOptions(updated);
+    emitChange({ weightOptions: updated });
+  };
+
+  const removeWeightOption = (id) => {
+    const updated = weightOptions.filter((opt) => opt.id !== id);
+    setWeightOptions(updated);
+    emitChange({ weightOptions: updated });
+  };
+
+  // Ensure dimensions object exists
+  const dimensions = weightShippingData.dimensions || {
+    width: "",
+    height: "",
+    length: "",
   };
 
   return (
@@ -38,22 +53,65 @@ const WeightShippings = ({
         Weight & Shipping
       </h2>
 
+      {/* Weight Options */}
+      <div className="mt-5">
+        <div className="font-medium mb-2">Weight Options</div>
+        {weightOptions.map((opt) => (
+          <div key={opt.id} className="flex gap-3 mb-3">
+            <input
+              type="number"
+              placeholder="Weight"
+              value={opt.weight}
+              onChange={(e) => updateWeightOption(opt.id, "weight", e.target.value)}
+              className="h-10 rounded-md border px-3 w-1/4"
+            />
+            <input
+              type="number"
+              placeholder="Price"
+              value={opt.price}
+              onChange={(e) => updateWeightOption(opt.id, "price", e.target.value)}
+              className="h-10 rounded-md border px-3 w-1/4"
+            />
+            <input
+              type="number"
+              placeholder="Stock"
+              value={opt.stock}
+              onChange={(e) => updateWeightOption(opt.id, "stock", e.target.value)}
+              className="h-10 rounded-md border px-3 w-1/4"
+            />
+            <button
+              type="button"
+              onClick={() => removeWeightOption(opt.id)}
+              className="px-3 bg-red-500 text-white rounded-md"
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addWeightOption}
+          className="mt-2 px-4 py-2 bg-indigo-500 text-white rounded-md"
+        >
+          Add Weight Option
+        </button>
+      </div>
+
       {/* Product Weight */}
       <div className="mt-5 flex flex-col xl:flex-row gap-5">
         <div className="xl:w-64">
-          <div className="font-medium">Product Weight</div>
-          <p className="text-xs opacity-70 mt-2">
-            Enter the weight by weighing the product after it is <a href="#" className="text-blue-500">packaged</a>.
-          </p>
+          <div className="font-medium">Default Product Weight</div>
         </div>
         <div className="flex-1 grid grid-cols-4 gap-5">
           <select
             className="h-10 rounded-md border px-3"
-            value={weightUnit}
-            onChange={(e) => {
-              setWeightUnit(e.target.value);
-              emitChange({ weightUnit: e.target.value });
-            }}
+            value={weightShippingData.weightUnit || "Gram (g)"}
+            onChange={(e) =>
+              setWeightShippingData((prev) => ({
+                ...prev,
+                weightUnit: e.target.value,
+              }))
+            }
           >
             <option value="Gram (g)">Gram (g)</option>
             <option value="Kilogram (kg)">Kilogram (kg)</option>
@@ -61,11 +119,10 @@ const WeightShippings = ({
           <input
             type="number"
             placeholder="Weight"
-            value={weight}
-            onChange={(e) => {
-              setWeight(e.target.value);
-              emitChange({ weight: e.target.value });
-            }}
+            value={weightShippingData.weight || ""}
+            onChange={(e) =>
+              setWeightShippingData((prev) => ({ ...prev, weight: e.target.value }))
+            }
             className="h-10 rounded-md border px-3 col-span-3"
           />
         </div>
@@ -75,9 +132,6 @@ const WeightShippings = ({
       <div className="mt-5 flex flex-col xl:flex-row gap-5">
         <div className="xl:w-64">
           <div className="font-medium">Product Size</div>
-          <p className="text-xs opacity-70 mt-2">
-            Enter the size after packing to calculate volume weight. <a href="#" className="text-blue-500">Learn Volume Weight</a>.
-          </p>
         </div>
         <div className="flex-1 space-y-4">
           <div className="grid grid-cols-3 gap-5">
@@ -88,14 +142,19 @@ const WeightShippings = ({
                   placeholder={dim.charAt(0).toUpperCase() + dim.slice(1)}
                   value={dimensions[dim]}
                   onChange={(e) => {
-                    const updated = { ...dimensions, [dim]: e.target.value };
-                    setDimensions(updated);
-                    emitChange({ dimensions: updated });
+                    const updatedDimensions = {
+                      ...dimensions,
+                      [dim]: e.target.value,
+                    };
+                    setWeightShippingData((prev) => ({
+                      ...prev,
+                      dimensions: updatedDimensions,
+                    }));
                   }}
                   className="h-10 w-full rounded-l-md border px-3"
                 />
                 <span className="w-16 h-10 flex items-center justify-center bg-gray-100 border border-l-0 rounded-r-md text-sm text-gray-600">
-                  {dimensionsUnit}
+                  {weightShippingData.dimensionsUnit || "inch"}
                 </span>
               </div>
             ))}
@@ -104,11 +163,10 @@ const WeightShippings = ({
             <label className="block text-sm font-medium mb-1">Unit</label>
             <select
               className="h-10 rounded-md border px-3"
-              value={dimensionsUnit}
-              onChange={(e) => {
-                setDimensionsUnit(e.target.value);
-                emitChange({ dimensionsUnit: e.target.value });
-              }}
+              value={weightShippingData.dimensionsUnit || "inch"}
+              onChange={(e) =>
+                setWeightShippingData((prev) => ({ ...prev, dimensionsUnit: e.target.value }))
+              }
             >
               <option value="inch">Inch</option>
               <option value="meter">Meter</option>
@@ -122,9 +180,6 @@ const WeightShippings = ({
       <div className="mt-5 flex flex-col xl:flex-row gap-5">
         <div className="xl:w-64">
           <div className="font-medium">Shipping Insurance</div>
-          <p className="text-xs opacity-70 mt-2">
-            Refund product & postage in case of damage/loss. <a href="#" className="text-blue-500">Learn More</a>.
-          </p>
         </div>
         <div className="flex-1 grid grid-cols-2 gap-4">
           {['required', 'optional'].map((option) => (
@@ -133,22 +188,13 @@ const WeightShippings = ({
                 type="radio"
                 name="insurance"
                 value={option}
-                checked={insurance === option}
-                aria-label={option}
-                onChange={() => {
-                  setInsurance(option);
-                  emitChange({ insurance: option });
-                }}
+                checked={weightShippingData.insurance === option}
+                onChange={() =>
+                  setWeightShippingData((prev) => ({ ...prev, insurance: option }))
+                }
                 className="mt-1"
               />
-              <span>
-                <div className="font-medium capitalize">{option}</div>
-                <div className="text-xs opacity-70 mt-1">
-                  {option === 'required'
-                    ? 'Buyer must activate insurance.'
-                    : 'Buyer can optionally activate insurance.'}
-                </div>
-              </span>
+              <span className="font-medium capitalize">{option}</span>
             </label>
           ))}
         </div>
@@ -158,9 +204,6 @@ const WeightShippings = ({
       <div className="mt-5 flex flex-col xl:flex-row gap-5">
         <div className="xl:w-64">
           <div className="font-medium">Shipping Service</div>
-          <p className="text-xs opacity-70 mt-2">
-            Configure shipping services according to your product type.
-          </p>
         </div>
         <div className="flex-1 grid grid-cols-2 gap-4">
           {['standard', 'custom'].map((service) => (
@@ -169,11 +212,10 @@ const WeightShippings = ({
                 type="radio"
                 name="shippingService"
                 value={service}
-                checked={shippingService === service}
-                onChange={() => {
-                  setShippingService(service);
-                  emitChange({ shippingService: service });
-                }}
+                checked={weightShippingData.shippingService === service}
+                onChange={() =>
+                  setWeightShippingData((prev) => ({ ...prev, shippingService: service }))
+                }
               />
               <span className="capitalize font-medium">{service}</span>
             </label>
@@ -189,15 +231,14 @@ const WeightShippings = ({
         <div className="flex-1 flex items-center space-x-2">
           <input
             type="checkbox"
-            checked={preOrder}
-            onChange={() => {
-              setPreOrder(!preOrder);
-              emitChange({ preOrder: !preOrder });
-            }}
+            checked={weightShippingData.preOrder || false}
+            onChange={() =>
+              setWeightShippingData((prev) => ({ ...prev, preOrder: !prev.preOrder }))
+            }
             className="h-5 w-5"
           />
           <label className="text-xs opacity-70">
-            Activate PreOrder for longer shipping process. <a href="#" className="text-blue-500">Learn more</a>
+            Activate PreOrder for longer shipping process.
           </label>
         </div>
       </div>

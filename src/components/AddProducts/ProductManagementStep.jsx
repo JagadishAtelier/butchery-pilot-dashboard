@@ -1,24 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
-const ProductManagement = ({ isActive: isActiveProp, stock: stockProp, sku: skuProp, onChange }) => {
+const ProductManagement = ({ isActive: isActiveProp, sku: skuProp, onChange }) => {
   const [isActive, setIsActive] = useState(isActiveProp ?? false);
-  const [stock, setStock] = useState(stockProp ?? "");
   const [sku, setSku] = useState(skuProp ?? "");
 
-  // Sync with props (e.g., for Edit mode)
+  // Sync with props (e.g., Edit mode)
   useEffect(() => {
     if (isActiveProp !== undefined) setIsActive(isActiveProp);
-    if (stockProp !== undefined) setStock(stockProp);
     if (skuProp !== undefined) setSku(skuProp);
-  }, [isActiveProp, stockProp, skuProp]);
+  }, [isActiveProp, skuProp]);
 
+  // Send changes to parent
   useEffect(() => {
-    onChange?.({ isActive, stock, sku });
-  }, [isActive, stock, sku]);
+    onChange?.({ isActive, sku });
+  }, [isActive, sku]);
 
   const handleToggle = () => setIsActive((prev) => !prev);
-  const handleStockChange = (e) => setStock(e.target.value);
   const handleSkuChange = (e) => setSku(e.target.value);
 
   return (
@@ -35,7 +33,7 @@ const ProductManagement = ({ isActive: isActiveProp, stock: stockProp, sku: skuP
             <div className="w-full xl:w-64 xl:mr-10">
               <div className="font-medium">Product Status</div>
               <div className="mt-3 text-xs text-gray-500">
-                If the status is active, your product can be searched for by potential buyers.
+                If the status is active, your product can be searched by potential buyers.
               </div>
             </div>
             <div className="mt-3 xl:mt-0 w-full flex-1">
@@ -55,22 +53,6 @@ const ProductManagement = ({ isActive: isActiveProp, stock: stockProp, sku: skuP
                   Active
                 </label>
               </div>
-            </div>
-          </div>
-
-          {/* Product Stock */}
-          <div className="flex flex-col xl:flex-row items-start">
-            <div className="w-full xl:w-64 xl:mr-10">
-              <div className="font-medium">Product Stock</div>
-            </div>
-            <div className="mt-3 xl:mt-0 w-full flex-1">
-              <input
-                type="text"
-                placeholder="Input Product Stock"
-                value={stock}
-                onChange={handleStockChange}
-                className="h-10 w-full rounded-md border px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
             </div>
           </div>
 
