@@ -1,264 +1,143 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProductById, updateProduct } from "../../api/productApi";
+import { uploadToCloudinary } from "../../api/imageUpload";
+import { toast } from "react-hot-toast";
 import ProductPhotoUpload from "./ProductPhotoUpload";
 import ProductInfoStep from "./ProductInfoStep";
 import ProductDetailStep from "./ProductDetailStep";
 import ProductVariantStep from "./ProductVariantStep";
-import ProductVariantDetails from "./ProductVariantDetails";
-import { useNavigate } from "react-router-dom";
-import WeightShippings from "./WeightShippings.jsx";
-import { toast } from "react-hot-toast";
-import { createProduct } from "../../api/productApi.js";
-import ProductManagement from "./ProductManagementStep.jsx";
-import { uploadToCloudinary } from "../../api/imageUpload.js";
-import { v4 as uuidv4 } from "uuid"; // Make sure you have uuid installed
+import ProductVariant from "./ProductVariantDetails";
+import ProductManagement from "./ProductManagementStep";
+import WeightShippings from "./WeightShippings";
 
-const steps = [
-  "Product Photo",
-  "Product Info",
-  "Product Details",
-  "Product Variants",
-  "Product Management",
-  "Weight & Shipping",
-];
-
-const ProductFormModal = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+const EditProduct = () => {
+  const { productId } = useParams();
   const navigate = useNavigate();
 
-  // Step-wise data
   const [productPhotos, setProductPhotos] = useState([]);
-  const [productInfo, setProductInfo] = useState({
-    productId: "", 
-    productName: "",
-    category: "",
-  });
+  const [productInfo, setProductInfo] = useState({ productId: "", productName: "", category: "" });
   const [productDetails, setProductDetails] = useState({
-    description: "",
-    videoUrl: "",
-    cutType: "",
-    shelfLife: "",
-    storageInstructions: "",
-    certifications: [],
+    condition: "", description: "", videoUrl: "", cutType: "", shelfLife: "", storageInstructions: "", certifications: []
   });
-  const [weightOptions, setWeightOptions] = useState([
-    { id: Date.now(), weight: "", price: "", stock: "" },
-  ]);
-
   const [variants, setVariants] = useState([]);
-  const [productManagementData, setProductManagementData] = useState({
-    isActive: false,
-    stock: "",
-    sku: "",
-  });
+  const [weightOptions, setWeightOptions] = useState([]);
+  const [productManagementData, setProductManagementData] = useState({ isActive: false, stock: "", sku: "", price: "" });
   const [weightShippingData, setWeightShippingData] = useState({
-    weight: "",
-    weightUnit: "Gram (g)",
-    dimensions: { width: "", height: "", length: "" },
-    dimensionsUnit: 'inch',
-    insurance: "optional",
-    shippingService: "standard",
-    preOrder: false,
+    weight: "", weightUnit: "Gram (g)", dimensions: { width: "", height: "", length: "" }, dimensionsUnit: "inch",
+    insurance: "optional", shippingService: "standard", preOrder: false
   });
+  const [loading, setLoading] = useState(true);
 
-  // Handlers for info steps
-  const handleProductPhotosChange = (images) => setProductPhotos(images);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const { data } = await getProductById(productId);
 
-  const handleProductInfoChange = ({ target: { name, value } }) => {
-    setProductInfo((prev) => ({ ...prev, [name]: value }));
-  };
-  const handleProductManagementChange = (data) => {
-    setProductManagementData(data);
-  };
+        // Photos
+        setProductPhotos((data.images || []).map((url) => ({ secure_url: url })));
 
-  const handleProductDetailChange = ({
-    target: { name, value, type, checked },
-  }) => {
-    setProductDetails((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-  // Certifications
-const addCertification = (cert) => {
-  setProductDetails((prev) => ({
-    ...prev,
-    certifications: [...prev.certifications, cert],
-  }));
-};
+        // Info
+        setProductInfo({
+          productId: data.productId || "",
+          productName: data.name || "",
+          category: data.category || "",
+        });
 
-const removeCertification = (cert) => {
-  setProductDetails((prev) => ({
-    ...prev,
-    certifications: prev.certifications.filter((c) => c !== cert),
-  }));
-};
+        // Details
+        setProductDetails({
+          condition: data.condition || "",
+          description: data.description || "",
+          videoUrl: data.productVideoUrl || "",
+          cutType: data.cutType || "",
+          shelfLife: data.shelfLife || "",
+          storageInstructions: data.storageInstructions || "",
+          certifications: data.certifications || [],
+        });
 
-// Weight Options
-const addWeightOption = () => {
-  setWeightOptions([...weightOptions, { id: Date.now(), weight: "", price: "", stock: "" }]);
-};
+        // Variants
+        const groupedVariants = (data.variant || []).reduce((acc, v) => {
+          let found = acc.find((item) => item.name === v.name);
+          if (found) {
+            found.options.push({ id: v._id, value: v.value }); // ✅ use backend _id
+          } else {
+            acc.push({
+              id: Date.now() + Math.random(), // unique ID for variant group
+              name: v.name,
+              options: [{ id: v._id, value: v.value }],
+            });
+          }
+          return acc;
+        }, []);
+        setVariants(groupedVariants);
 
-const updateWeightOption = (id, field, value) => {
-  setWeightOptions(
-    weightOptions.map((opt) => (opt.id === id ? { ...opt, [field]: value } : opt))
-  );
-};
+        // Weight Options
+        setWeightOptions((data.weightOptions || []).map((w) => ({
+          id: w._id, // ✅ stable ID
+          weight: w.weight,
+          price: w.price,
+          stock: w.stock,
+        })));
 
-const removeWeightOption = (id) => {
-  setWeightOptions(weightOptions.filter((opt) => opt.id !== id));
-};
+        // Management
+        setProductManagementData({
+          isActive: data.status === "Active",
+          sku: data.SKU || "",
+          stock: data.stock || 0,
+          price: data.price || 0,
+        });
 
-  const handleProductDescriptionChange = (value) =>
-    setProductDetails((prev) => ({ ...prev, description: value }));
+        // Weight & Shipping
+        setWeightShippingData({
+          weight: data.shipping?.weight || "",
+          weightUnit: "Gram (g)",
+          dimensions: {
+            width: data.shipping?.size?.width || "",
+            height: data.shipping?.size?.height || "",
+            length: data.shipping?.size?.length || "",
+          },
+          dimensionsUnit: data.shipping?.size?.unit || "inch",
+          insurance: "optional",
+          shippingService: "standard",
+          preOrder: false,
+        });
 
-  const handleConditionChange = (value) =>
-    setProductDetails((prev) => ({ ...prev, condition: value }));
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load product");
+        setLoading(false);
+      }
+    };
 
-  const handleVideoUrlChange = (url) =>
-    setProductDetails((prev) => ({ ...prev, videoUrl: url }));
-
-  // Variant Handlers
-  const addVariant = () => {
-    if (variants?.length >= 3) {
-      toast.error("You can add a maximum of 3 variant types.");
-      return;
-    }
-    setVariants([...variants, { id: Date.now(), name: "", options: [] }]);
-  };
-
-  const removeVariant = (id) => {
-    setVariants(variants.filter((v) => v.id !== id));
-  };
-
-  const updateVariantName = (id, newName) => {
-    setVariants(
-      variants.map((v) => (v.id === id ? { ...v, name: newName } : v))
-    );
-  };
-
-  const addVariantOption = (variantId, value) => {
-    setVariants(
-      variants.map((v) =>
-        v.id === variantId
-          ? { ...v, options: [...v.options, { id: Date.now(), value }] }
-          : v
-      )
-    );
-  };
-
-  const removeVariantOption = (variantId, optionId) => {
-    setVariants(
-      variants.map((v) =>
-        v.id === variantId
-          ? { ...v, options: v.options.filter((o) => o.id !== optionId) }
-          : v
-      )
-    );
-  };
-
-  const handleWeightShippingChange = (data) => {
-    setWeightShippingData(data);
-  };
-
-  // Step Navigation
-  const nextStep = () => {
-    switch (currentStep) {
-      case 0:
-        if (!productPhotos?.length) {
-          toast.error("Upload at least one product photo.");
-          return;
-        }
-        break;
-      case 1:
-        if (!productInfo.productName || productInfo.productName?.length < 20) {
-          toast.error("Product name must be at least 20 characters.");
-          return;
-        }
-        if (!productInfo.category) {
-          toast.error("Category is required.");
-          return;
-        }
-        break;
-      case 2:
-        if (!productDetails.description) {
-          toast.error("Description is required.");
-          return;
-        }
-        if (productDetails.description?.length < 30) {
-          toast.error("Description should be at least 30 characters.");
-          return;
-        }
-        break;
-      case 4:
-        if (!productManagementData.sku) {
-          toast.error("SKU is required.");
-          return;
-        }
-        break;
-      case 5:
-        const { weight, dimensions } = weightShippingData;
-        const { width, height, length } = dimensions || {};
-        if (
-          !weight ||
-          isNaN(weight) ||
-          Number(weight) <= 0 ||
-          !width ||
-          isNaN(width) ||
-          Number(width) <= 0 ||
-          !height ||
-          isNaN(height) ||
-          Number(height) <= 0 ||
-          !length ||
-          isNaN(length) ||
-          Number(length) <= 0
-        ) {
-          toast.error(
-            "Enter valid weight and all dimensions (width, height, length)."
-          );
-          return;
-        }
-        break;
-    }
-    if (currentStep < steps?.length - 1) setCurrentStep(currentStep + 1);
-  };
-
-  const prevStep = () => {
-    if (currentStep > 0) setCurrentStep(currentStep - 1);
-  };
+    fetchProduct();
+  }, [productId]);
 
   const handleSubmit = async () => {
     try {
-      // Upload all productPhotos to Cloudinary
       const uploadedPhotoUrls = await Promise.all(
-        productPhotos.map((file) => uploadToCloudinary(file))
+        productPhotos.map((img) => (img.secure_url ? img.secure_url : uploadToCloudinary(img)))
       );
 
-      // Flatten variants into [{ name: ..., value: ... }]
-      const flattenedVariants = variants.flatMap((variant) =>
-        variant.options.map((opt) => ({
-          name: variant.name,
-          value: opt.value,
-        }))
+      const flattenedVariants = variants.flatMap((v) =>
+        v.options.map((opt) => ({ name: v.name, value: opt.value }))
       );
 
-      const finalData = {
-        productId: productInfo.productId, // ✅ use entered value
+      const payload = {
+        productId: productInfo.productId,
         images: uploadedPhotoUrls,
         name: productInfo.productName,
-        category: productInfo.category, // ObjectId
-        productVideoUrl: productDetails.videoUrl,
+        category: productInfo.category,
+        condition: productDetails.condition,
         description: productDetails.description,
+        productVideoUrl: productDetails.videoUrl,
         cutType: productDetails.cutType,
         shelfLife: productDetails.shelfLife,
         storageInstructions: productDetails.storageInstructions,
         certifications: productDetails.certifications,
         variant: flattenedVariants,
         unit: weightShippingData.unit || "kg",
-        weightOptions: weightOptions.map((w) => ({
-          weight: Number(w.weight),
-          price: Number(w.price),
-          stock: Number(w.stock || 0),
-        })),
+        weightOptions: weightOptions.map((w) => ({ weight: Number(w.weight), price: Number(w.price), stock: Number(w.stock || 0) })),
         shipping: {
           weight: Number(weightShippingData.weight),
           size: {
@@ -268,159 +147,82 @@ const removeWeightOption = (id) => {
             unit: weightShippingData.dimensionsUnit || "inch",
           },
         },
-        SKU: productManagementData.sku || "",
+        SKU: productManagementData.sku,
         status: productManagementData.isActive ? "Active" : "Inactive",
+        stock: productManagementData.stock,
+        price: productManagementData.price,
       };
 
-      const response = await createProduct(finalData);
-      console.log("Submitted Successfully:", response);
-      toast.success("Product created successfully!");
+      await updateProduct(productId, payload);
+      toast.success("Product updated successfully!");
       navigate("/products");
-    } catch (error) {
-      console.error("Error creating product:", error);
-      toast.error("Failed to submit product. Please try again.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update product");
     }
   };
 
+  if (loading) return <div className="p-4">Loading product...</div>;
+
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Add New Product
-      </h1>
+    <div className="max-w-6xl mx-auto p-6 bg-white shadow rounded">
+      <h2 className="text-2xl font-semibold mb-6">Edit Product</h2>
 
-      <div className="mb-8 text-center text-lg font-medium text-indigo-700">
-        Step {currentStep + 1} of {steps?.length}: {steps[currentStep]}
-      </div>
-
-      {/* Step Components */}
-      {currentStep === 0 && (
-        <ProductPhotoUpload onImagesChange={handleProductPhotosChange} />
-      )}
-      {currentStep === 1 && (
-        <ProductInfoStep
+      <ProductPhotoUpload initialImages={productPhotos} onImagesChange={setProductPhotos} />
+      <ProductInfoStep
         productId={productInfo.productId}
-        setProductId={(val) =>
-          handleProductInfoChange({
-            target: { name: "productId", value: val },
-          })
-        }
-          productName={productInfo.productName}
-          setProductName={(val) =>
-            handleProductInfoChange({
-              target: { name: "productName", value: val },
-            })
-          }
-          category={productInfo.category}
-          setCategory={(val) =>
-            handleProductInfoChange({
-              target: { name: "category", value: val },
-            })
-          }
-          categories={["Electronics", "Apparel", "Home Goods", "Books"]}
-          subcategories={
-            productInfo.category === "Electronics"
-              ? ["Phones", "Laptops", "Tablets"]
-              : productInfo.category === "Apparel"
-              ? ["Men's", "Women's", "Kids'"]
-              : []
-          }
+        setProductId={(val) => setProductInfo((prev) => ({ ...prev, productId: val }))}
+        productName={productInfo.productName}
+        setProductName={(val) => setProductInfo((prev) => ({ ...prev, productName: val }))}
+        category={productInfo.category}
+        setCategory={(val) => setProductInfo((prev) => ({ ...prev, category: val }))}
+      />
+      <ProductDetailStep
+        description={productDetails.description}
+        setDescription={(val) => setProductDetails((prev) => ({ ...prev, description: val }))}
+        cutType={productDetails.cutType}
+        setCutType={(val) => setProductDetails((prev) => ({ ...prev, cutType: val }))}
+        shelfLife={productDetails.shelfLife}
+        setShelfLife={(val) => setProductDetails((prev) => ({ ...prev, shelfLife: val }))}
+        storageInstructions={productDetails.storageInstructions}
+        setStorageInstructions={(val) => setProductDetails((prev) => ({ ...prev, storageInstructions: val }))}
+        videoUrl={productDetails.videoUrl}
+        setVideoUrl={(val) => setProductDetails((prev) => ({ ...prev, videoUrl: val }))}
+        certifications={productDetails.certifications}
+        addCertification={(cert) => setProductDetails((prev) => ({ ...prev, certifications: [...prev.certifications, cert] }))}
+        removeCertification={(cert) => setProductDetails((prev) => ({ ...prev, certifications: prev.certifications.filter((c) => c !== cert) }))}
+      />
+      <ProductVariantStep variants={variants} setVariants={setVariants} />
+      {variants.map((variant) => (
+        <ProductVariant
+          key={variant.id}
+          variantName={variant.name}
+          options={variant.options}
+          onNameChange={(val) => setVariants((prev) => prev.map((v) => (v.id === variant.id ? { ...v, name: val } : v)))}
+          onOptionsChange={(opts) => setVariants((prev) => prev.map((v) => (v.id === variant.id ? { ...v, options: opts } : v)))}
         />
-      )}
-      {currentStep === 2 && (
-        <ProductDetailStep
-  description={productDetails.description}
-  setDescription={handleProductDescriptionChange}
-  videoUrl={productDetails.videoUrl}
-  setVideoUrl={handleVideoUrlChange}
-  onAddVideoClick={() => alert("Video upload coming soon!")}
-  handleChange={handleProductDetailChange}
-  cutType={productDetails.cutType}
-  setCutType={(val) =>
-    setProductDetails((prev) => ({ ...prev, cutType: val }))
-  }
-  shelfLife={productDetails.shelfLife}
-  setShelfLife={(val) =>
-    setProductDetails((prev) => ({ ...prev, shelfLife: val }))
-  }
-  storageInstructions={productDetails.storageInstructions}
-  setStorageInstructions={(val) =>
-    setProductDetails((prev) => ({ ...prev, storageInstructions: val }))
-  }
-  certifications={productDetails.certifications}
-  addCertification={addCertification}
-  removeCertification={removeCertification}
-/>
+      ))}
+      <ProductManagement
+        isActive={productManagementData.isActive}
+        stock={productManagementData.stock}
+        sku={productManagementData.sku}
+        price={productManagementData.price}
+        onChange={(data) => setProductManagementData(data)}
+      />
+      <WeightShippings
+        weightShippingData={weightShippingData}
+        setWeightShippingData={setWeightShippingData}
+        weightOptions={weightOptions}
+        setWeightOptions={setWeightOptions}
+      />
 
-      )}
-      {currentStep === 3 && (
-        <>
-          <ProductVariantStep onAddVariantClick={addVariant} />
-          {variants?.length === 0 && (
-            <p className="mt-4 text-center text-gray-500">
-              No variants added. Click "Add Variant" to begin.
-            </p>
-          )}
-          {variants.map((variant) => (
-            <ProductVariantDetails
-              key={variant.id}
-              variantName={variant.name}
-              options={variant.options}
-              onNameChange={(val) => updateVariantName(variant.id, val)}
-              onAddOption={(val) => addVariantOption(variant.id, val)}
-              onRemoveOption={(optId) => removeVariantOption(variant.id, optId)}
-              onRemove={() => removeVariant(variant.id)}
-            />
-          ))}
-        </>
-      )}
-      {currentStep === 4 && (
-        <ProductManagement onChange={handleProductManagementChange} />
-      )}
-
-      {currentStep === 5 && (
-        <WeightShippings
-  onChange={handleWeightShippingChange}
-  weightShippingData={weightShippingData}
-  setWeightShippingData={setWeightShippingData}
-  weightOptions={weightOptions}
-  setWeightOptions={setWeightOptions}
-/>
-
-
-      )}
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-10 p-4 border-t border-gray-200">
-        <button
-          onClick={prevStep}
-          disabled={currentStep === 0}
-          className={`px-6 py-2 rounded-lg font-semibold transition-colors duration-200 ${
-            currentStep === 0
-              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-              : "bg-indigo-500 text-white hover:bg-indigo-600"
-          }`}
-        >
-          Back
+      <div className="mt-6 flex justify-end">
+        <button onClick={handleSubmit} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+          Save Changes
         </button>
-
-        {currentStep < steps?.length - 1 ? (
-          <button
-            onClick={nextStep}
-            className="px-6 py-2 rounded-lg font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition-colors duration-200"
-          >
-            Next
-          </button>
-        ) : (
-          <button
-            onClick={handleSubmit}
-            className="px-6 py-2 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700 transition-colors duration-200"
-          >
-            Submit Product
-          </button>
-        )}
       </div>
     </div>
   );
 };
 
-export default ProductFormModal;
+export default EditProduct;

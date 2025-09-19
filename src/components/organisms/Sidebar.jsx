@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import image from '../../assets/ik-white.svg'
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -35,9 +36,10 @@ export default function Sidebar({ setSidebarOpen }) {
     >
       {/* Logo */}
       <div className={`mb-10 px-1 flex items-center gap-2 ${collapsed ? 'justify-center' : 'px-5'}`}>
-        <LucideShoppingCart size={24} />
         {!collapsed && (
-          <a href='/' className="text-2xl font-bold transition-all duration-300 ease-in-out select-text">ShopNow</a>
+          <a href='/' className="text-2xl font-bold transition-all duration-300 ease-in-out select-text">
+            <img src={image}/>
+          </a>
         )}
         {/* Toggle Button */}
         <button

@@ -59,10 +59,10 @@ export default function ProductList() {
 
   const filteredProducts = useMemo(() => {
     if (!Array.isArray(products)) return [];
-
+  
     return products.filter(
       (p) =>
-        (p.name + p.category + p.id)
+        (p.name + p.category + p._id) // <-- use _id here
           .toLowerCase()
           .includes(search.toLowerCase()) &&
         (statusFilter ? p.status === statusFilter : true) &&
@@ -111,10 +111,10 @@ export default function ProductList() {
   };
   const handleDeleteClick = (product) => {
     // Optimistically remove from UI
-    setProducts((prev) => prev.filter((p) => p.id !== product.id));
-
+    setProducts((prev) => prev.filter((p) => p._id !== product._id)); // <-- use _id
+  
     let undoCalled = false;
-
+  
     const undo = () => {
       undoCalled = true;
       setProducts((prev) => [product, ...prev]);
@@ -123,7 +123,6 @@ export default function ProductList() {
       setStatusFilter("");
       setCategoryFilter("");
     };
-
     toast(
       (t) => (
         <div className="flex items-center justify-between gap-4">
@@ -147,7 +146,7 @@ export default function ProductList() {
     // After timeout, if not undone, call actual delete API
     setTimeout(() => {
       if (!undoCalled) {
-        deleteProduct(product.id)
+        deleteProduct(product._id)
           .then(() => {
             toast.success(`${product.name} deleted from server.`);
           })

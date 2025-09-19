@@ -1,20 +1,18 @@
 import { ChevronRight } from "lucide-react";
 
 const topProducts = [
-  // {
-  //   id: 1,
-  //   title: 'Tshirt Levis',
-  //   price: '₹ 4990',
-  //   image: '/tshirt.jpg',
-  //   sales: 9000
-  // },
-  // {
-  //   id: 2,
-  //   title: 'Long jeans jacket',
-  //   price: '₹ 1299',
-  //   image: '/jeans-jacket.jpg',
-  //   sales: 8895
-  // },
+  {
+    id: 1,
+    title: 'Country Chicken',
+    price: '₹ 450',
+    image: 'https://res.cloudinary.com/dxm28ujz3/image/upload/v1758278971/products/mlf3xyjts9lm8gcsxtfu.jpg',
+  },
+  {
+    id: 2,
+    title: 'Premium quality goat meat cut',
+    price: '₹ 850',
+    image: 'https://res.cloudinary.com/dxm28ujz3/image/upload/v1758280497/products/bgybeptyx0qlsdvlnzgq.jpg',
+  },
   // {
   //   id: 3,
   //   title: 'Fullcap',
