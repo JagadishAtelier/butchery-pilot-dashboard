@@ -9,7 +9,7 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#EE1c25]">
+    <div className="flex h-screen bg-red-800">
       {/* Sidebar */}
       <div
         className={`fixed md:static z-40 top-16 left-0 h-full transition-transform duration-300 ease-in-out

@@ -10,11 +10,8 @@ const ProductInfoStep = ({
   setProductName,
   category,
   setCategory,
-  subcategory,
-  setSubcategory,
 }) => {
   const [categories, setCategories] = useState([]);
-  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Fetch categories
@@ -30,21 +27,7 @@ const ProductInfoStep = ({
     fetchCategories();
   }, []);
 
-// When category changes → update subcategories list
-useEffect(() => {
-  const selected = categories.find((cat) => cat._id === category);
-  setFilteredSubcategories(selected?.subcategories || []);
 
-  // reset invalid subcategory if user changed category
-  if (selected && subcategory && !selected.subcategories.some(sub => sub._id === subcategory)) {
-    setSubcategory("");
-  }
-}, [category, categories]);
-
-  
-  useEffect(() => {
-    console.log("Selected subcategory:", subcategory);
-  }, [subcategory]);
   
 
   const handleCategoryChange = (e) => {
@@ -140,35 +123,6 @@ useEffect(() => {
             {/* <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-500" /> */}
           </div>
         </div>
-
-        {/* Subcategory */}
-{/* Subcategory */}
-{filteredSubcategories?.length > 0 && (
-  <div className="flex flex-col xl:flex-row items-start mb-6">
-    <div className="w-full xl:w-64 xl:mr-10">
-      <label htmlFor="subcategory" className="font-medium">
-        Subcategory
-      </label>
-    </div>
-    <div className="flex-1 w-full relative">
-    <select
-  id="subcategory"
-  value={subcategory || ""}   // ensure it's always a string
-  onChange={(e) => setSubcategory(e.target.value)} // always string
-  className="h-10 w-full rounded-md border px-3 py-2 pr-8"
->
-  <option value="">Select a Subcategory</option>
-  {filteredSubcategories.map((sub) => (
-    <option key={sub._id} value={sub._id.toString()}>
-      {sub.name}
-    </option>
-  ))}
-</select>
-
-
-    </div>
-  </div>
-)}
 
       </div>
 

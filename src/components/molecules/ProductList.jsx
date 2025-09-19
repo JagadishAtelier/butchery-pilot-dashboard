@@ -300,12 +300,19 @@ export default function ProductList() {
                       />
                     ))}
                   </td>
-                  <td className="p-3 whitespace-nowrap">{product.name}</td>
+                  <td className="p-3 whitespace-nowrap">
+  {product.name.split(" ").slice(0, 5).join(" ")}
+  {product.name.split(" ").length > 10 && "..."}
+</td>
+
                   <td className="p-3 whitespace-nowrap">{product.categoryData.name}</td>
                   <td className="p-3 whitespace-nowrap">{product.productId}</td>
                   <td className="p-3 whitespace-nowrap">
-  {product.weightOptions.find((w) => w.weight === 1000)?.price || "N/A"}
+  {product.weightOptions.find((w) => w.weight === 1000)?.price 
+    || product.weightOptions[0]?.price 
+    || "N/A"}
 </td>
+
 
                   <td
                     className={`p-3 font-medium whitespace-nowrap ${

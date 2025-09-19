@@ -1,14 +1,13 @@
 import { ChevronDown } from 'lucide-react';
-import React from 'react';
+import React,{useEffect} from 'react';
 
 const WeightShippings = ({
   onChange,
   weightShippingData,
   setWeightShippingData,
-  weightOptions,
+  weightOptions = [], 
   setWeightOptions,
 }) => {
-
   const emitChange = (updated = {}) => {
     onChange?.({
       weightShippingData,
@@ -16,6 +15,16 @@ const WeightShippings = ({
       ...updated,
     });
   };
+
+  useEffect(() => {
+    if (weightOptions.length) {
+      const withIds = weightOptions.map((opt, index) => ({
+        id: opt.id || `${opt.weight}-${opt.price}-${index}-${Date.now()}`,
+        ...opt,
+      }));
+      setWeightOptions(withIds);
+    }
+  }, []);
 
   // Handle Weight Option Change
   const updateWeightOption = (id, field, value) => {

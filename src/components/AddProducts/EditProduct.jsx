@@ -7,7 +7,7 @@ import ProductPhotoUpload from "./ProductPhotoUpload";
 import ProductInfoStep from "./ProductInfoStep";
 import ProductDetailStep from "./ProductDetailStep";
 import ProductVariantStep from "./ProductVariantStep";
-import ProductVariant  from "./ProductVariantDetails";
+import ProductVariant from "./ProductVariantDetails";
 import ProductManagement from "./ProductManagementStep";
 import WeightShippings from "./WeightShippings";
 
@@ -17,6 +17,7 @@ const EditProduct = () => {
 
   const [productPhotos, setProductPhotos] = useState([]);
   const [productInfo, setProductInfo] = useState({
+    productId: "",
     productName: "",
     category: "",
     subcategory: "",
@@ -26,21 +27,23 @@ const EditProduct = () => {
     description: "",
     videoUrl: "",
   });
+  const [weightOptions, setWeightOptions] = useState([]);
   const [variants, setVariants] = useState([]);
   const [productManagementData, setProductManagementData] = useState({
-    isActive: true,
-    stock: 0,
+    isActive: false,
+    stock: "",
     sku: "",
     price: "",
   });
   const [weightShippingData, setWeightShippingData] = useState({
-  weight: "",
-  weightUnit: "Gram (g)",
-  dimensions: { width: "", height: "", length: "" },
-  insurance: "optional",
-  shippingService: "standard",
-  preOrder: false,
-});
+    weight: "",
+    weightUnit: "Gram (g)",
+    dimensions: { width: "", height: "", length: "" },
+    dimensionsUnit: "inch",
+    insurance: "optional",
+    shippingService: "standard",
+    preOrder: false,
+  });
 
   const [loading, setLoading] = useState(true);
 
@@ -53,6 +56,7 @@ const EditProduct = () => {
         setProductPhotos((data.images || []).map((url) => ({ secure_url: url })));
 
         setProductInfo({
+          productId: data.productId || "",
           productName: data.name || "",
           category: data.category || "",
           subcategory: data.subcategory || "",
@@ -64,7 +68,8 @@ const EditProduct = () => {
           videoUrl: data.productVideoUrl || "",
         });
 
-        setVariants(data.variant || []);
+        setVariants(data.variants || data.variant || []);
+        setWeightOptions(data.weightOptions || []);
 
         setProductManagementData({
           isActive: data.status === "Active",
@@ -73,7 +78,7 @@ const EditProduct = () => {
           price: data.price || "",
         });
 
-        setWeightShippingData(data.shipping);
+        setWeightShippingData(data.shipping || weightShippingData);
 
         setLoading(false);
       } catch (err) {
@@ -96,13 +101,15 @@ const EditProduct = () => {
 
       const payload = {
         images: imageUrls.map((img) => img.secure_url || img),
+        productId: productInfo.productId,
         name: productInfo.productName,
         category: productInfo.category,
         subcategory: productInfo.subcategory,
         condition: productDetails.condition,
         description: productDetails.description,
         productVideoUrl: productDetails.videoUrl,
-        variant: variants,
+        variants,
+        weightOptions,
         status: productManagementData.isActive ? "Active" : "Inactive",
         stock: productManagementData.stock,
         SKU: productManagementData.sku,
@@ -127,62 +134,69 @@ const EditProduct = () => {
     <div className="max-w-6xl mx-auto p-6 bg-white shadow rounded">
       <h2 className="text-2xl font-semibold mb-6">Edit Product</h2>
 
+      {/* Step 1: Photos */}
       <ProductPhotoUpload
         initialImages={productPhotos}
         onImagesChange={setProductPhotos}
       />
 
+      {/* Step 2: Info */}
       <ProductInfoStep
-  productName={productInfo.productName}
-  setProductName={(val) =>
-    setProductInfo((prev) => ({ ...prev, productName: val }))
-  }
-  category={productInfo.category}
-  setCategory={(val) =>
-    setProductInfo((prev) => ({ ...prev, category: val }))
-  }
-  subcategory={productInfo.subcategory}
-  setSubcategory={(val) =>
-    setProductInfo((prev) => ({ ...prev, subcategory: val }))
-  }
-/>
+              productId={productInfo.productId}
+              setProductId={(val) =>
+                handleProductInfoChange({
+                  target: { name: "productId", value: val },
+                })
+              }
+        productName={productInfo.productName}
+        setProductName={(val) =>
+          setProductInfo((prev) => ({ ...prev, productName: val }))
+        }
+        category={productInfo.category}
+        setCategory={(val) =>
+          setProductInfo((prev) => ({ ...prev, category: val }))
+        }
+        subcategory={productInfo.subcategory}
+        setSubcategory={(val) =>
+          setProductInfo((prev) => ({ ...prev, subcategory: val }))
+        }
+      />
 
-
+      {/* Step 3: Details */}
       <ProductDetailStep
-  description={productDetails.description}
-  setDescription={(val) =>
-    setProductDetails((prev) => ({ ...prev, description: val }))
-  }
-  onAddVideoClick={() => {
-    const urlInput = document.querySelector("input[type='url']");
-    if (urlInput) {
-      setProductDetails((prev) => ({
-        ...prev,
-        videoUrl: urlInput.value,
-      }));
-    }
-  }}
-/>
-
-
-      <ProductVariantStep
-        variants={variants}
-        setVariants={setVariants}
-      />
-      <ProductVariant
-        variantName={variants[0]}
+        description={productDetails.description}
+        setDescription={(val) =>
+          setProductDetails((prev) => ({ ...prev, description: val }))
+        }
+        onAddVideoClick={() => {
+          const urlInput = document.querySelector("input[type='url']");
+          if (urlInput) {
+            setProductDetails((prev) => ({
+              ...prev,
+              videoUrl: urlInput.value,
+            }));
+          }
+        }}
       />
 
+      {/* Step 4: Variants */}
+      <ProductVariantStep variants={variants} setVariants={setVariants} />
+      <ProductVariant variantName={variants[0]?.name || ""} />
+
+      {/* Step 5: Management */}
       <ProductManagement
-  isActive={productManagementData.isActive}
-  stock={productManagementData.stock}
-  sku={productManagementData.sku}
-/>
+        isActive={productManagementData.isActive}
+        stock={productManagementData.stock}
+        sku={productManagementData.sku}
+        price={productManagementData.price}
+      />
 
-
+      {/* Step 6: Weight & Shipping */}
       <WeightShippings
         weightShippingData={weightShippingData}
         setWeightShippingData={setWeightShippingData}
+        weightOptions={weightOptions}
+        setWeightOptions={setWeightOptions}
       />
 
       <div className="mt-6 flex justify-end">

@@ -31,7 +31,7 @@ export default function Sidebar({ setSidebarOpen }) {
     <aside
       className={`${
         collapsed ? 'sm:w-20' : 'sm:w-56'
-      } w-80 bg-[#EE1c25] text-white h-full p-6 pe-0 transition-[width] duration-300 ease-in-out relative select-none`}
+      } w-80 bg-red-800 text-white h-full p-6 pe-0 transition-[width] duration-300 ease-in-out relative select-none`}
     >
       {/* Logo */}
       <div className={`mb-10 px-1 flex items-center gap-2 ${collapsed ? 'justify-center' : 'px-5'}`}>
@@ -59,7 +59,7 @@ export default function Sidebar({ setSidebarOpen }) {
             `flex items-center gap-2 ${
               collapsed ? 'justify-center' : 'ps-3 pe-5'
             } py-3 rounded-[13px] rounded-tr-[0px] rounded-br-[0px] transition relative ${
-              isActive ? 'text-[#5840BB] font-medium active-tab active-tab-bg' : 'hover:bg-purple-700'
+              isActive ? 'text-black font-medium active-tab active-tab-bg' : 'hover:bg-white hover:text-black'
             }`
           }
           title={collapsed ? 'Dashboard' : undefined}
@@ -76,8 +76,8 @@ export default function Sidebar({ setSidebarOpen }) {
       collapsed ? 'justify-center' : 'ps-3 pe-5'
     } py-3 rounded-[13px] rounded-tr-[0px] rounded-br-[0px] transition ${
       (isProductActive || productOpen) && !collapsed
-        ? 'text-white font-medium bg-purple-700'
-        : 'hover:bg-purple-700'
+        ? 'text-black font-medium bg-white'
+        : 'hover:bg-white hover:text-black'
     }`}
   >
     <BarChart2 />
@@ -96,7 +96,7 @@ export default function Sidebar({ setSidebarOpen }) {
         onClick={handleNavClick}
         className={({ isActive }) =>
           `block text-sm rounded rounded-r-none px-2 py-2 transition ${
-            isActive ? 'text-[#5840BB] font-medium bg-white active-tab active-tab-bg' : 'hover:text-white/80'
+            isActive ? 'text-black font-medium bg-white active-tab active-tab-bg' : 'hover:bg-white hover:text-black'
           }`
         }
       >
@@ -107,7 +107,7 @@ export default function Sidebar({ setSidebarOpen }) {
         onClick={handleNavClick}
         className={({ isActive }) =>
           `block text-sm rounded rounded-r-none px-2 py-2 transition ${
-            isActive ? 'text-[#5840BB] font-medium bg-white active-tab active-tab-bg' : 'hover:text-white/80'
+            isActive ? 'text-black font-medium bg-white active-tab active-tab-bg' : 'hover:bg-white hover:text-black'
           }`
         }
       >
@@ -118,7 +118,7 @@ export default function Sidebar({ setSidebarOpen }) {
         onClick={handleNavClick}
         className={({ isActive }) =>
           `block text-sm rounded rounded-r-none px-2 py-2 transition ${
-            isActive ? 'text-[#5840BB] font-medium bg-white active-tab' : 'hover:text-white/80'
+            isActive ? 'text-black font-medium bg-white active-tab' : 'hover:bg-white hover:text-black'
           }`
         }
       >
@@ -137,7 +137,7 @@ export default function Sidebar({ setSidebarOpen }) {
             `flex items-center gap-2 ${
               collapsed ? 'justify-center' : 'ps-3 pe-5'
             } py-3 rounded-[13px] rounded-tr-[0px] rounded-br-[0px] transition relative ${
-              isActive ? 'text-[#5840BB] font-medium active-tab active-tab-bg' : 'hover:bg-purple-700'
+              isActive ? 'text-black font-medium active-tab active-tab-bg' : 'hover:bg-white hover:text-black'
             }`
           }
           title={collapsed ? 'Orders' : undefined}
@@ -154,7 +154,7 @@ export default function Sidebar({ setSidebarOpen }) {
             `flex items-center gap-2 ${
               collapsed ? 'justify-center' : 'ps-3 pe-5'
             } py-3 rounded-[13px] rounded-tr-[0px] rounded-r-[0px] transition relative ${
-              isActive ? 'text-[#5840BB] font-medium active-tab active-tab-bg' : 'hover:bg-purple-700'
+              isActive ? 'text-black font-medium active-tab active-tab-bg' : 'hover:bg-white hover:text-black'
             }`
           }
           title={collapsed ? 'Payments' : undefined}
@@ -164,7 +164,7 @@ export default function Sidebar({ setSidebarOpen }) {
         </NavLink>
 
         {/* Marketing */}
-        <NavLink
+        {/* <NavLink
           to="/marketing"
           onClick={handleNavClick}
           className={({ isActive }) =>
@@ -178,7 +178,7 @@ export default function Sidebar({ setSidebarOpen }) {
         >
           <Star />
           {!collapsed && <span>Marketing</span>}
-        </NavLink>
+        </NavLink> */}
       </nav>
     </aside>
   );

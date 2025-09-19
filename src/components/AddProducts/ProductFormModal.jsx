@@ -31,7 +31,6 @@ const ProductFormModal = () => {
     productId: "", 
     productName: "",
     category: "",
-    subcategory: "",
   });
   const [productDetails, setProductDetails] = useState({
     description: "",
@@ -179,10 +178,6 @@ const removeWeightOption = (id) => {
           toast.error("Category is required.");
           return;
         }
-        if (!productInfo.subcategory) {
-          toast.error("Subcategory is required."); // ✅ new validation
-          return;
-        }
         break;
       case 2:
         if (!productDetails.description) {
@@ -251,7 +246,6 @@ const removeWeightOption = (id) => {
         images: uploadedPhotoUrls,
         name: productInfo.productName,
         category: productInfo.category, // ObjectId
-        subcategory: productInfo.subcategory,
         productVideoUrl: productDetails.videoUrl,
         description: productDetails.description,
         cutType: productDetails.cutType,
@@ -320,12 +314,6 @@ const removeWeightOption = (id) => {
           setCategory={(val) =>
             handleProductInfoChange({
               target: { name: "category", value: val },
-            })
-          }
-          subcategory={productInfo.subcategory}
-          setSubcategory={(val) =>
-            handleProductInfoChange({
-              target: { name: "subcategory", value: val },
             })
           }
           categories={["Electronics", "Apparel", "Home Goods", "Books"]}
