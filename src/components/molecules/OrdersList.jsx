@@ -12,6 +12,7 @@ import {
   Truck,
   CheckCircle,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -23,6 +24,7 @@ import { toast } from "react-hot-toast";
 import OrderDetailsModal from "./OrderDetailsModal";
 
 export default function TransactionList() {
+  const navigate = useNavigate()
   const [transactions, setTransactions] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("");
@@ -31,7 +33,6 @@ export default function TransactionList() {
   const [priceSort, setPriceSort] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
-
   const openDetails = (order) => {
     setSelectedOrder(order);
     setModalOpen(true);
@@ -269,7 +270,10 @@ export default function TransactionList() {
                   <td className="p-3">{txn.total || 0}</td>
                   <td className="p-3">
                     <div className="flex flex-col sm:flex-row gap-2">
-                      <button className="text-indigo-600 hover:underline flex items-center gap-1" onClick={() => openDetails(txn)}>
+                      <button className="text-indigo-600 hover:underline flex items-center gap-1"   onClick={() => {
+    console.log("Selected Order:", txn); // logs full order
+    navigate(`/orders/${txn._id}`); // navigate using _id
+  }}>
                         <CheckSquare size={16} />View Details
                       </button>
                     </div>

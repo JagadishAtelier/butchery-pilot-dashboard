@@ -23,7 +23,7 @@ const steps = [
 const ProductFormModal = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(false); 
   // Form States
   const [productPhotos, setProductPhotos] = useState([]);
   const [productInfo, setProductInfo] = useState({
@@ -99,6 +99,7 @@ const ProductFormModal = () => {
   // Final Submit
   const handleSubmit = async () => {
     try {
+      setLoading(true); 
       const uploadedPhotoUrls = await Promise.all(
         productPhotos.map((file) => uploadToCloudinary(file))
       );
@@ -129,6 +130,8 @@ const ProductFormModal = () => {
     } catch (error) {
       console.error("Error creating product:", error);
       toast.error("Failed to submit product. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -223,9 +226,10 @@ const ProductFormModal = () => {
         ) : (
           <button
             onClick={handleSubmit}
+            disabled={loading}
             className="px-6 py-2 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700"
           >
-            Submit Product
+{loading ? "Submitting..." : "Submit Product"}
           </button>
         )}
       </div>

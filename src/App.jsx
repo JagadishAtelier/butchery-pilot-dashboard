@@ -16,6 +16,7 @@ import ProfilePage from './pages/profilepage';
 import EditProduct from './components/AddProducts/EditProduct';
 import ChatBot from './components/ChatBot';
 import ForgotPassword from './components/ForgotPassword';
+import OrderDetailsPage from './components/molecules/OrderDetailsPage';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/" element={<DashboardLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="/orders" element={<OrderPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetailsPage/>} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/Addproducts" element={<ProductFormModal />} />
             <Route path="/editproduct/:productId" element={<EditProduct />} />

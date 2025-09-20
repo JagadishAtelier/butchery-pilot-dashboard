@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { getOrders } from "../../api/ordersApi";
 import { CheckSquare } from "lucide-react";
 import OrderDetailsModal from "./OrderDetailsModal";
-
+import { useNavigate } from "react-router-dom";
 function NewOrdersList() {
+    const navigate = useNavigate()
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -68,7 +69,7 @@ function NewOrdersList() {
                   <td className="p-3">
                     <button
                       className="text-indigo-600 hover:underline flex items-center gap-1"
-                      onClick={() => openDetails(order)}
+                      onClick={() => navigate(`/orders/${order._id}`)}
                     >
                       <CheckSquare size={16} /> View Details
                     </button>

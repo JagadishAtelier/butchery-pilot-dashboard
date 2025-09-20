@@ -36,16 +36,18 @@ export default function Sidebar({ setSidebarOpen }) {
     >
       {/* Logo */}
       <div className={`mb-10 px-1 flex items-center gap-2 ${collapsed ? 'justify-center' : 'px-5'}`}>
-        {!collapsed && (
-          <a href='/' className="text-2xl font-bold transition-all duration-300 ease-in-out select-text">
-            <img src={image}/>
-          </a>
-        )}
+      <a href='/' className="text-2xl font-bold transition-all duration-300 ease-in-out select-text">
+    <img 
+      src={image} 
+      className={`${collapsed ? 'w-10 h-10' : 'w-24 h-auto'}`} 
+      alt="Logo"
+    />
+  </a>
         {/* Toggle Button */}
         <button
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="absolute bottom-14 -right-3 transition-all duration-300 ease-in-out hidden sm:block bg-[#42427d] text-white p-1 rounded-full shadow-md"
+          className="absolute bottom-14 -right-3 transition-all duration-300 ease-in-out hidden sm:block bg-red-800 text-white p-1 rounded-full shadow-md"
         >
           {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
