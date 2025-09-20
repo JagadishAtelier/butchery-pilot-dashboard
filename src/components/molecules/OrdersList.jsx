@@ -19,7 +19,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { getOrders } from "../../api/ordersApi";
 import { assignAwb, trackShipment, getLabel } from "../../api/shiprocketApi";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import OrderDetailsModal from "./OrderDetailsModal";
 
 export default function TransactionList() {
@@ -96,22 +96,20 @@ export default function TransactionList() {
       filtered = filtered.filter((t) => t.paymentMethod === paymentFilter);
     if (buyerFilter)
       filtered = filtered.filter((t) =>
-        t.buyer.name.toLowerCase().includes(buyerFilter)
+        t.buyer?.name?.toLowerCase().includes(buyerFilter)
       );
     if (locationFilter)
       filtered = filtered.filter((t) =>
-        t.location.toLowerCase().includes(locationFilter)
+        t.location?.toLowerCase().includes(locationFilter)
       );
 
     if (priceSort === "low") {
       filtered.sort(
-        (a, b) =>
-          parseFloat(a.total) - parseFloat(b.total)
+        (a, b) => parseFloat(a.total || 0) - parseFloat(b.total || 0)
       );
     } else if (priceSort === "high") {
       filtered.sort(
-        (a, b) =>
-          parseFloat(b.total) - parseFloat(a.total)
+        (a, b) => parseFloat(b.total || 0) - parseFloat(a.total || 0)
       );
     }
 
@@ -121,13 +119,13 @@ export default function TransactionList() {
   const exportToExcel = () => {
     const data = filteredTransactions.map((txn) => ({
       Invoice: txn.orderId || txn.id,
-      Buyer: txn.buyer.name,
-      Email: txn.buyer.email,
-      Location: txn.location,
-      Status: txn.status,
-      PaymentMethod: txn.paymentMethod,
-      PaymentDate: txn.paymentDate,
-      Total: txn.total,
+      Buyer: txn.buyer?.name || "",
+      Email: txn.buyer?.email || "",
+      Location: txn.location || "",
+      Status: txn.status || "",
+      PaymentMethod: txn.paymentMethod || "",
+      PaymentDate: txn.paymentDate || "",
+      Total: txn.total || 0,
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -144,7 +142,7 @@ export default function TransactionList() {
   const exportToPDF = () => {
     const doc = new jsPDF();
     const tableColumn = [
-      "Invoice",
+      "Order Id",
       "Buyer Name",
       "Email",
       "Location",
@@ -157,12 +155,12 @@ export default function TransactionList() {
     filteredTransactions.forEach((txn) => {
       tableRows.push([
         txn.orderId || txn.id,
-        txn.buyer.name,
-        txn.buyer.email,
-        txn.location,
-        txn.status,
-        `${txn.paymentMethod} (${txn.paymentDate})`,
-        txn.total,
+        txn.buyer?.name || "",
+        txn.buyer?.email || "",
+        txn.location || "",
+        txn.status || "",
+        `${txn.paymentMethod || ""} (${txn.paymentDate || ""})`,
+        txn.total || 0,
       ]);
     });
 
@@ -223,7 +221,7 @@ export default function TransactionList() {
           <thead className="text-left text-gray-600">
             <tr>
               <th className="p-3"><input type="checkbox" /></th>
-              <th className="p-3">Invoice</th>
+              <th className="p-3">Order Id</th>
               <th className="p-3">Buyer</th>
               <th className="p-3">Status</th>
               <th className="p-3">Payment</th>
@@ -239,13 +237,13 @@ export default function TransactionList() {
                 </td>
               </tr>
             ) : (
-              filteredTransactions?.map((txn, index) => (
+              filteredTransactions?.map((txn) => (
                 <tr key={txn._id} className="bg-white border rounded-lg shadow-sm hover:shadow-md transition">
                   <td className="p-3"><input type="checkbox" /></td>
                   <td className="p-3 font-medium text-indigo-600 underline decoration-dotted">{txn.orderId || txn.id}</td>
                   <td className="p-3">
-                    <div className="font-medium">{txn.buyer.name}</div>
-                    <div className="text-xs text-gray-500">{txn.buyer.email}</div>
+                    <div className="font-medium">{txn.buyer?.name || "N/A"}</div>
+                    <div className="text-xs text-gray-500">{txn.buyer?.email || "N/A"}</div>
                   </td>
                   <td className={`p-3 flex items-center gap-2 font-medium ${
                     txn.status === "Completed" ? "text-green-600" :
@@ -265,10 +263,10 @@ export default function TransactionList() {
                     {txn.status}
                   </td>
                   <td className="p-3">
-                    <div>{txn.paymentMethod}</div>
-                    <div className="text-xs text-gray-500">{txn.paymentDate}</div>
+                    <div>{txn.paymentMethod || "N/A"}</div>
+                    <div className="text-xs text-gray-500">{txn.paymentDate || "N/A"}</div>
                   </td>
-                  <td className="p-3">{txn.total}</td>
+                  <td className="p-3">{txn.total || 0}</td>
                   <td className="p-3">
                     <div className="flex flex-col sm:flex-row gap-2">
                       <button className="text-indigo-600 hover:underline flex items-center gap-1" onClick={() => openDetails(txn)}>
