@@ -1,228 +1,236 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getProductById, updateProduct } from "../../api/productApi";
-import { uploadToCloudinary } from "../../api/imageUpload";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
+
+import { uploadToCloudinary } from "../../api/imageUpload.js";
+import { createProduct } from "../../api/productApi.js";
+
 import ProductPhotoUpload from "./ProductPhotoUpload";
 import ProductInfoStep from "./ProductInfoStep";
 import ProductDetailStep from "./ProductDetailStep";
-import ProductVariantStep from "./ProductVariantStep";
-import ProductVariant from "./ProductVariantDetails";
-import ProductManagement from "./ProductManagementStep";
-import WeightShippings from "./WeightShippings";
+import ProductManagement from "./ProductManagementStep.jsx";
+import WeightShippings from "./WeightShippings.jsx";
 
-const EditProduct = () => {
-  const { productId } = useParams();
+const steps = [
+  "Product Photo",
+  "Product Info",
+  "Product Details",
+  "Product Management",
+  "Weight & Shipping",
+];
+
+const ProductFormModal = () => {
+  const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
 
+  // Form States
   const [productPhotos, setProductPhotos] = useState([]);
-  const [productInfo, setProductInfo] = useState({ productId: "", productName: "", category: "" });
+  const [productInfo, setProductInfo] = useState({
+    productId:"", // auto generate
+    productName: "",
+    category: "",
+  });
   const [productDetails, setProductDetails] = useState({
-    condition: "", description: "", videoUrl: "", cutType: "", shelfLife: "", storageInstructions: "", certifications: []
+    description: "",
+    videoUrl: "",
+    cutType:[],
+    shelfLife: "",
+    storageInstructions: "",
   });
-  const [variants, setVariants] = useState([]);
-  const [weightOptions, setWeightOptions] = useState([]);
-  const [productManagementData, setProductManagementData] = useState({ isActive: false, stock: "", sku: "", price: "" });
+  const [weightOptions, setWeightOptions] = useState([
+    { id: Date.now(), weight: "", price: "", stock: "" },
+  ]);
+  const [productManagementData, setProductManagementData] = useState({
+    isActive: false,
+    sku: "",
+  });
   const [weightShippingData, setWeightShippingData] = useState({
-    weight: "", weightUnit: "Gram (g)", dimensions: { width: "", height: "", length: "" }, dimensionsUnit: "inch",
-    insurance: "optional", shippingService: "standard", preOrder: false
+    unit: "kg",
+    dimensions: { width: "", height: "", length: "" },
+    weight: "",
   });
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const { data } = await getProductById(productId);
+  // Handlers
+  const handleProductPhotosChange = (images) => setProductPhotos(images);
+  const handleProductInfoChange = ({ target: { name, value } }) =>
+    setProductInfo((prev) => ({ ...prev, [name]: value }));
 
-        // Photos
-        setProductPhotos((data.images || []).map((url) => ({ secure_url: url })));
+  const handleProductDetailChange = ({ target: { name, value } }) =>
+    setProductDetails((prev) => ({ ...prev, [name]: value }));
 
-        // Info
-        setProductInfo({
-          productId: data.productId || "",
-          productName: data.name || "",
-          category: data.category || "",
-        });
+  const handleProductManagementChange = (data) =>
+    setProductManagementData(data);
 
-        // Details
-        setProductDetails({
-          condition: data.condition || "",
-          description: data.description || "",
-          videoUrl: data.productVideoUrl || "",
-          cutType: data.cutType || "",
-          shelfLife: data.shelfLife || "",
-          storageInstructions: data.storageInstructions || "",
-          certifications: data.certifications || [],
-        });
+  const addWeightOption = () =>
+    setWeightOptions([...weightOptions, { id: Date.now(), weight: "", price: "", stock: "" }]);
 
-        // Variants
-        const groupedVariants = (data.variant || []).reduce((acc, v) => {
-          let found = acc.find((item) => item.name === v.name);
-          if (found) {
-            found.options.push({ id: v._id, value: v.value }); // ✅ use backend _id
-          } else {
-            acc.push({
-              id: Date.now() + Math.random(), // unique ID for variant group
-              name: v.name,
-              options: [{ id: v._id, value: v.value }],
-            });
-          }
-          return acc;
-        }, []);
-        setVariants(groupedVariants);
+  const updateWeightOption = (id, field, value) =>
+    setWeightOptions(weightOptions.map((opt) =>
+      opt.id === id ? { ...opt, [field]: value } : opt
+    ));
 
-        // Weight Options
-        setWeightOptions((data.weightOptions || []).map((w) => ({
-          id: w._id, // ✅ stable ID
-          weight: w.weight,
-          price: w.price,
-          stock: w.stock,
-        })));
+  const removeWeightOption = (id) =>
+    setWeightOptions(weightOptions.filter((opt) => opt.id !== id));
 
-        // Management
-        setProductManagementData({
-          isActive: data.status === "Active",
-          sku: data.SKU || "",
-          stock: data.stock || 0,
-          price: data.price || 0,
-        });
+  // Step Navigation
+  const nextStep = () => {
+    if (currentStep === 0 && !productPhotos?.length) {
+      toast.error("Upload at least one product photo.");
+      return;
+    }
+    if (currentStep === 1 && (!productInfo.productName || !productInfo.category)) {
+      toast.error("Product name and category are required.");
+      return;
+    }
+    if (currentStep === 2 && !productDetails.description) {
+      toast.error("Description is required.");
+      return;
+    }
+    if (currentStep === 3 && !productManagementData.sku) {
+      toast.error("SKU is required.");
+      return;
+    }
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+  };
 
-        // Weight & Shipping
-        setWeightShippingData({
-          weight: data.shipping?.weight || "",
-          weightUnit: "Gram (g)",
-          dimensions: {
-            width: data.shipping?.size?.width || "",
-            height: data.shipping?.size?.height || "",
-            length: data.shipping?.size?.length || "",
-          },
-          dimensionsUnit: data.shipping?.size?.unit || "inch",
-          insurance: "optional",
-          shippingService: "standard",
-          preOrder: false,
-        });
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to load product");
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [productId]);
-
+  // Final Submit
   const handleSubmit = async () => {
     try {
       const uploadedPhotoUrls = await Promise.all(
-        productPhotos.map((img) => (img.secure_url ? img.secure_url : uploadToCloudinary(img)))
+        productPhotos.map((file) => uploadToCloudinary(file))
       );
 
-      const flattenedVariants = variants.flatMap((v) =>
-        v.options.map((opt) => ({ name: v.name, value: opt.value }))
-      );
-
-      const payload = {
+      const finalData = {
         productId: productInfo.productId,
         images: uploadedPhotoUrls,
         name: productInfo.productName,
         category: productInfo.category,
-        condition: productDetails.condition,
-        description: productDetails.description,
         productVideoUrl: productDetails.videoUrl,
-        cutType: productDetails.cutType,
+        description: productDetails.description,
+        cutType: Array.isArray(productDetails.cutType) ? productDetails.cutType : [], // ✅ force array
         shelfLife: productDetails.shelfLife,
         storageInstructions: productDetails.storageInstructions,
-        certifications: productDetails.certifications,
-        variant: flattenedVariants,
-        unit: weightShippingData.unit || "kg",
-        weightOptions: weightOptions.map((w) => ({ weight: Number(w.weight), price: Number(w.price), stock: Number(w.stock || 0) })),
-        shipping: {
-          weight: Number(weightShippingData.weight),
-          size: {
-            width: Number(weightShippingData.dimensions.width),
-            height: Number(weightShippingData.dimensions.height),
-            length: Number(weightShippingData.dimensions.length),
-            unit: weightShippingData.dimensionsUnit || "inch",
-          },
-        },
+        unit: weightShippingData.unit,
+        weightOptions: weightOptions.map((w) => ({
+          weight: Number(w.weight),
+          price: Number(w.price),
+          stock: Number(w.stock || 0),
+        })),
         SKU: productManagementData.sku,
         status: productManagementData.isActive ? "Active" : "Inactive",
-        stock: productManagementData.stock,
-        price: productManagementData.price,
       };
 
-      await updateProduct(productId, payload);
-      toast.success("Product updated successfully!");
+      const response = await createProduct(finalData);
+      toast.success("Product created successfully!");
       navigate("/products");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update product");
+    } catch (error) {
+      console.error("Error creating product:", error);
+      toast.error("Failed to submit product. Please try again.");
     }
   };
 
-  if (loading) return <div className="p-4">Loading product...</div>;
-
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white shadow rounded">
-      <h2 className="text-2xl font-semibold mb-6">Edit Product</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+      <h1 className="text-2xl font-bold mb-6 text-center">Add New Product</h1>
 
-      <ProductPhotoUpload initialImages={productPhotos} onImagesChange={setProductPhotos} />
-      <ProductInfoStep
-        productId={productInfo.productId}
-        setProductId={(val) => setProductInfo((prev) => ({ ...prev, productId: val }))}
-        productName={productInfo.productName}
-        setProductName={(val) => setProductInfo((prev) => ({ ...prev, productName: val }))}
-        category={productInfo.category}
-        setCategory={(val) => setProductInfo((prev) => ({ ...prev, category: val }))}
-      />
-      <ProductDetailStep
-        description={productDetails.description}
-        setDescription={(val) => setProductDetails((prev) => ({ ...prev, description: val }))}
-        cutType={productDetails.cutType}
-        setCutType={(val) => setProductDetails((prev) => ({ ...prev, cutType: val }))}
-        shelfLife={productDetails.shelfLife}
-        setShelfLife={(val) => setProductDetails((prev) => ({ ...prev, shelfLife: val }))}
-        storageInstructions={productDetails.storageInstructions}
-        setStorageInstructions={(val) => setProductDetails((prev) => ({ ...prev, storageInstructions: val }))}
-        videoUrl={productDetails.videoUrl}
-        setVideoUrl={(val) => setProductDetails((prev) => ({ ...prev, videoUrl: val }))}
-        certifications={productDetails.certifications}
-        addCertification={(cert) => setProductDetails((prev) => ({ ...prev, certifications: [...prev.certifications, cert] }))}
-        removeCertification={(cert) => setProductDetails((prev) => ({ ...prev, certifications: prev.certifications.filter((c) => c !== cert) }))}
-      />
-      <ProductVariantStep variants={variants} setVariants={setVariants} />
-      {variants.map((variant) => (
-        <ProductVariant
-          key={variant.id}
-          variantName={variant.name}
-          options={variant.options}
-          onNameChange={(val) => setVariants((prev) => prev.map((v) => (v.id === variant.id ? { ...v, name: val } : v)))}
-          onOptionsChange={(opts) => setVariants((prev) => prev.map((v) => (v.id === variant.id ? { ...v, options: opts } : v)))}
-        />
-      ))}
-      <ProductManagement
-        isActive={productManagementData.isActive}
-        stock={productManagementData.stock}
-        sku={productManagementData.sku}
-        price={productManagementData.price}
-        onChange={(data) => setProductManagementData(data)}
-      />
-      <WeightShippings
-        weightShippingData={weightShippingData}
-        setWeightShippingData={setWeightShippingData}
-        weightOptions={weightOptions}
-        setWeightOptions={setWeightOptions}
-      />
+      <div className="mb-6 text-center font-medium text-indigo-700">
+        Step {currentStep + 1} of {steps.length}: {steps[currentStep]}
+      </div>
 
-      <div className="mt-6 flex justify-end">
-        <button onClick={handleSubmit} className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-          Save Changes
+      {currentStep === 0 && <ProductPhotoUpload onImagesChange={handleProductPhotosChange} />}
+      {currentStep === 1 && (
+  <ProductInfoStep
+    productId={productInfo.productId}
+    setProductId={(val) =>
+      setProductInfo((prev) => ({ ...prev, productId: val }))
+    }
+    productName={productInfo.productName}
+    setProductName={(val) =>
+      setProductInfo((prev) => ({ ...prev, productName: val }))
+    }
+    category={productInfo.category}
+    setCategory={(val) =>
+      setProductInfo((prev) => ({ ...prev, category: val }))
+    }
+  />
+)}
+
+      {currentStep === 2 && (
+// Only key changes shown for cutType & submit
+<ProductDetailStep
+  description={productDetails.description}
+  setDescription={(val) =>
+    setProductDetails((prev) => ({ ...prev, description: val }))
+  }
+  videoUrl={productDetails.videoUrl}
+  setVideoUrl={(val) =>
+    setProductDetails((prev) => ({ ...prev, videoUrl: val }))
+  }
+  cutType={productDetails.cutType}
+  setCutType={(val) =>
+    setProductDetails((prev) => ({
+      ...prev,
+      cutType: Array.isArray(val) ? val : [],
+    }))
+  }
+  shelfLife={productDetails.shelfLife}
+  setShelfLife={(val) =>
+    setProductDetails((prev) => ({ ...prev, shelfLife: val }))
+  }
+  storageInstructions={productDetails.storageInstructions}
+  setStorageInstructions={(val) =>
+    setProductDetails((prev) => ({ ...prev, storageInstructions: val }))
+  }
+/>
+
+      )}
+      {currentStep === 3 && (
+        <ProductManagement onChange={handleProductManagementChange} />
+      )}
+{currentStep === 4 && (
+  <WeightShippings
+    weightOptions={weightOptions}
+    addWeightOption={addWeightOption}
+    updateWeightOption={updateWeightOption}
+    removeWeightOption={removeWeightOption}
+  />
+)}
+
+
+      <div className="flex justify-between mt-10 p-4 border-t border-gray-200">
+        <button
+          onClick={prevStep}
+          disabled={currentStep === 0}
+          className={`px-6 py-2 rounded-lg font-semibold ${
+            currentStep === 0
+              ? "bg-gray-200 text-gray-500"
+              : "bg-indigo-500 text-white hover:bg-indigo-600"
+          }`}
+        >
+          Back
         </button>
+
+        {currentStep < steps.length - 1 ? (
+          <button
+            onClick={nextStep}
+            className="px-6 py-2 rounded-lg font-semibold bg-indigo-600 text-white hover:bg-indigo-700"
+          >
+            Next
+          </button>
+        ) : (
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-2 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700"
+          >
+            Submit Product
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
-export default EditProduct;
+export default ProductFormModal;

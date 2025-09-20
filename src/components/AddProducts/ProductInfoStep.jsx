@@ -60,14 +60,15 @@ const ProductInfoStep = ({
     </label>
   </div>
   <div className="flex-1 w-full">
-    <input
-      id="productId"
-      type="text"
-      placeholder="Enter unique product ID"
-      value={productId}
-      onChange={(e) => setProductId(e.target.value)}
-      className="h-10 w-full rounded-md border px-3 py-2"
-    />
+  <input
+  id="productId"
+  type="text"
+  placeholder="Enter unique product ID"
+  value={productId}
+  onChange={(e) => setProductId(e.target.value)}
+  className="h-10 w-full rounded-md border px-3 py-2"
+/>
+
   </div>
 </div>
 
