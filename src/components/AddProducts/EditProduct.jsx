@@ -29,7 +29,7 @@ const EditProduct = () => {
       try {
         const { data } = await getProductById(productId);
 
-        setProductPhotos((data.images || []).map((url) => ({ secure_url: url })));
+        setProductPhotos(data.images || []);
 
         setProductInfo({
           productId: data.productId || "",
@@ -93,8 +93,13 @@ const EditProduct = () => {
   const handleSubmit = async () => {
     try {
       const uploadedPhotoUrls = await Promise.all(
-        productPhotos.map((img) => (img.secure_url ? img.secure_url : uploadToCloudinary(img)))
+        productPhotos.map(async (img) => {
+          if (typeof img === "string") return img;           // existing URL
+          if (img instanceof File) return await uploadToCloudinary(img); // new file
+          return null;
+        })
       );
+            
 
       const payload = {
         productId: productInfo.productId,
