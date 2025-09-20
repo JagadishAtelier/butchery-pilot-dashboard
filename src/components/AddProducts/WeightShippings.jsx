@@ -1,12 +1,25 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react"; 
 import React from "react";
 
-const WeightShippings = ({
-  weightOptions = [],
-  addWeightOption,
-  updateWeightOption,
-  removeWeightOption,
-}) => {
+const WeightShippings = ({ weightOptions = [], setWeightOptions }) => {
+
+  const updateWeightOption = (id, field, value) => {
+    setWeightOptions(prev =>
+      prev.map(opt => (opt.id === id ? { ...opt, [field]: value } : opt))
+    );
+  };
+
+  const removeWeightOption = (id) => {
+    setWeightOptions(prev => prev.filter(opt => opt.id !== id));
+  };
+
+  const addWeightOption = () => {
+    setWeightOptions(prev => [
+      ...prev,
+      { id: Date.now() + Math.random(), weight: "", price: "", stock: "" }
+    ]);
+  };
+
   return (
     <div className="p-5 mt-8 relative border rounded-xl bg-white shadow-md">
       <h2 className="text-base font-medium border-b pb-5 flex items-center">
@@ -14,7 +27,6 @@ const WeightShippings = ({
         Weight Options
       </h2>
 
-      {/* Weight Options */}
       <div className="mt-5">
         {weightOptions.map((opt) => (
           <div key={opt.id} className="flex gap-3 mb-3">
