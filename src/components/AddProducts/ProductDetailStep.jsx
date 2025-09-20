@@ -9,11 +9,6 @@ const meatCuts = [
   "Sinthamani Cut",
   "Pallipalayam Cut",
   "Keema Cut",
-  "Special Cut 1",
-  "Special Cut 2",
-  "Special Cut 3",
-  "Special Cut 4",
-  "Special Cut 5",
 ];
 
 const ProductDetailStep = ({
