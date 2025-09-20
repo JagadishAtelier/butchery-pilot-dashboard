@@ -94,7 +94,6 @@ export default function CategoryPage() {
               <th className="py-3 px-4">Category Image</th>
               <th className="py-3 px-4">Category Name</th>
               <th className="py-3 px-4">Description</th>
-              <th className="py-3 px-4">Subcategories</th>
               <th className="py-3 px-4">Actions</th>
             </tr>
           </thead>
@@ -117,26 +116,6 @@ export default function CategoryPage() {
                 </td>
                 <td className="py-3 px-4">{cat.name}</td>
                 <td className="py-3 px-4">{cat.description}</td>
-                <td className="py-3 px-4">
-                  {cat.subcategories?.length > 0 ? (
-                    <ul className="text-xs space-y-1">
-                      {cat.subcategories.map((sub, idx) => (
-                        <li key={idx} className="flex items-center gap-2">
-                          {sub.image && (
-                            <img
-                              src={sub.image}
-                              className="w-5 h-5 rounded-full object-cover border"
-                              alt={sub.name}
-                            />
-                          )}
-                          <span>{sub.name}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-gray-400">No subcategories</span>
-                  )}
-                </td>
                 <td className="py-3 px-4 flex gap-4 text-center">
                   <button
                     onClick={() => {

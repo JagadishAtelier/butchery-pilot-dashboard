@@ -32,7 +32,7 @@ export default function Sidebar({ setSidebarOpen }) {
     <aside
       className={`${
         collapsed ? 'sm:w-20' : 'sm:w-56'
-      } w-80 bg-red-800 text-white h-full p-6 pe-0 transition-[width] duration-300 ease-in-out relative select-none`}
+      } w-80 bg-black text-white h-full p-6 pe-0 transition-[width] duration-300 ease-in-out relative select-none`}
     >
       {/* Logo */}
       <div className={`mb-10 px-1 flex items-center gap-2 ${collapsed ? 'justify-center' : 'px-5'}`}>
