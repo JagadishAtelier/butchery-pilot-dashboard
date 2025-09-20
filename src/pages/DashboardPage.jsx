@@ -3,6 +3,7 @@ import { PiggyBank, ReceiptText } from 'lucide-react';
 import TopSellingProducts from '../components/molecules/TopSellingProducts';
 import SalesStatistics from '../components/molecules/SalesStatistics';
 import UniqueVisitorsChart from '../components/molecules/UniqueVisitorsChart';
+import NewOrdersList from '../components/molecules/NewOrdersList';
 
 export default function DashboardPage() {
   return (
@@ -27,7 +28,8 @@ export default function DashboardPage() {
           />
         </div>
         <div className="w-full">
-          <SalesStatistics />
+          {/* <SalesStatistics /> */}
+          <NewOrdersList/>
         </div>
       </div>
 
