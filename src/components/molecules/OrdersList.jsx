@@ -30,12 +30,12 @@ export default function TransactionList() {
   const [locationFilter, setLocationFilter] = useState("");
   const [priceSort, setPriceSort] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
-const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
 
-const openDetails = (order) => {
-  setSelectedOrder(order);
-  setModalOpen(true);
-};
+  const openDetails = (order) => {
+    setSelectedOrder(order);
+    setModalOpen(true);
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -46,18 +46,16 @@ const openDetails = (order) => {
         console.error("Failed to fetch orders", err);
       }
     };
-
     fetchOrders();
   }, []);
-console.log(transactions);
 
   const assignAwbHandler = async (orderId) => {
     try {
       await assignAwb(orderId);
-       toast.success(`AWB assigned for ${orderId}`);
+      toast.success(`AWB assigned for ${orderId}`);
     } catch (err) {
-         console.error(err);
-    toast.error("Failed to assign AWB");
+      console.error(err);
+      toast.error("Failed to assign AWB");
     }
   };
 
@@ -81,7 +79,7 @@ console.log(transactions);
       link.href = url;
       link.download = `${orderId}_label.pdf`;
       link.click();
-       toast.success("Label downloaded");
+      toast.success("Label downloaded");
     } catch (err) {
       console.error(err);
       toast.error("Failed to download label");
@@ -89,7 +87,7 @@ console.log(transactions);
   };
 
   const filteredTransactions = useMemo(() => {
-      if (!Array.isArray(transactions)) return [];
+    if (!Array.isArray(transactions)) return [];
     let filtered = [...transactions];
 
     if (statusFilter)
@@ -98,7 +96,7 @@ console.log(transactions);
       filtered = filtered.filter((t) => t.paymentMethod === paymentFilter);
     if (buyerFilter)
       filtered = filtered.filter((t) =>
-        t.buyer.toLowerCase().includes(buyerFilter)
+        t.buyer.name.toLowerCase().includes(buyerFilter)
       );
     if (locationFilter)
       filtered = filtered.filter((t) =>
@@ -108,14 +106,12 @@ console.log(transactions);
     if (priceSort === "low") {
       filtered.sort(
         (a, b) =>
-          parseFloat(a.total.replace(/[^0-9.]/g, "")) -
-          parseFloat(b.total.replace(/[^0-9.]/g, ""))
+          parseFloat(a.total) - parseFloat(b.total)
       );
     } else if (priceSort === "high") {
       filtered.sort(
         (a, b) =>
-          parseFloat(b.total.replace(/[^0-9.]/g, "")) -
-          parseFloat(a.total.replace(/[^0-9.]/g, ""))
+          parseFloat(b.total) - parseFloat(a.total)
       );
     }
 
@@ -124,8 +120,9 @@ console.log(transactions);
 
   const exportToExcel = () => {
     const data = filteredTransactions.map((txn) => ({
-      Invoice: txn.id,
-      Buyer: txn.buyer,
+      Invoice: txn.orderId || txn.id,
+      Buyer: txn.buyer.name,
+      Email: txn.buyer.email,
       Location: txn.location,
       Status: txn.status,
       PaymentMethod: txn.paymentMethod,
@@ -148,18 +145,20 @@ console.log(transactions);
     const doc = new jsPDF();
     const tableColumn = [
       "Invoice",
-      "Buyer",
+      "Buyer Name",
+      "Email",
       "Location",
       "Status",
       "Payment",
-      "Amount",
+      "Amount"
     ];
     const tableRows = [];
 
     filteredTransactions.forEach((txn) => {
       tableRows.push([
-        txn.id,
-        txn.buyer,
+        txn.orderId || txn.id,
+        txn.buyer.name,
+        txn.buyer.email,
         txn.location,
         txn.status,
         `${txn.paymentMethod} (${txn.paymentDate})`,
@@ -182,7 +181,7 @@ console.log(transactions);
     <div className="p-5">
       <h2 className="text-xl font-semibold mb-4">Orders List</h2>
 
-      {/* Top Filters and Actions */}
+      {/* Filters */}
       <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
         <div className="relative w-full sm:w-64">
           <input
@@ -218,56 +217,6 @@ console.log(transactions);
         </div>
       </div>
 
-      {/* Filter Panel */}
-      <div className="sticky top-0 sm:top-[-12px] z-10 bg-white py-3 border-y mb-4">
-        <div className="mb-1">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-9 rounded border w-full px-1 sm:px-3 text-sm focus:ring-indigo-500"
-          >
-            <option value="">All Statuses</option>
-            <option>Pending</option>
-            <option>Packing</option>
-            <option>Shipped</option>
-            <option>Delivered</option>
-            <option>Completed</option>
-            <option>Cancelled</option>
-            <option>Returned</option>
-          </select>
-        </div>
-
-        <div className="flex gap-1">
-          <div className="w-1/2">
-            <select
-              value={paymentFilter}
-              onChange={(e) => setPaymentFilter(e.target.value)}
-              className="h-9 rounded border w-full px-1 sm:px-3 text-sm focus:ring-indigo-500"
-            >
-              <option value="">All Payments</option>
-              <option>UPI</option>
-              <option>Credit Card</option>
-              <option>Debit Card</option>
-              <option>Net Banking</option>
-              <option>Cash on Delivery</option>
-              <option>Direct bank transfer</option>
-            </select>
-          </div>
-
-          <div className="w-1/2">
-            <select
-              value={priceSort}
-              onChange={(e) => setPriceSort(e.target.value)}
-              className="h-9 rounded border w-full px-1 sm:px-3 text-sm focus:ring-indigo-500"
-            >
-              <option value="">Sort by Price</option>
-              <option value="low">Price: Low to High</option>
-              <option value="high">Price: High to Low</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-separate border-spacing-y-2">
@@ -279,8 +228,7 @@ console.log(transactions);
               <th className="p-3">Status</th>
               <th className="p-3">Payment</th>
               <th className="p-3">Amount</th>
-              <th className="p-3">Ship Rocket</th>
-              <th className="p-3">Actions</th>
+              <th className="p-3">Product Details</th>
             </tr>
           </thead>
           <tbody>
@@ -292,12 +240,12 @@ console.log(transactions);
               </tr>
             ) : (
               filteredTransactions?.map((txn, index) => (
-                <tr key={index} className="bg-white border rounded-lg shadow-sm hover:shadow-md transition">
+                <tr key={txn._id} className="bg-white border rounded-lg shadow-sm hover:shadow-md transition">
                   <td className="p-3"><input type="checkbox" /></td>
-                  <td className="p-3 font-medium text-indigo-600 underline decoration-dotted">{txn.id}</td>
+                  <td className="p-3 font-medium text-indigo-600 underline decoration-dotted">{txn.orderId || txn.id}</td>
                   <td className="p-3">
-                    <div className="font-medium">{txn.buyer}</div>
-                    <div className="text-xs text-gray-500">{txn.location}</div>
+                    <div className="font-medium">{txn.buyer.name}</div>
+                    <div className="text-xs text-gray-500">{txn.buyer.email}</div>
                   </td>
                   <td className={`p-3 flex items-center gap-2 font-medium ${
                     txn.status === "Completed" ? "text-green-600" :
@@ -321,18 +269,10 @@ console.log(transactions);
                     <div className="text-xs text-gray-500">{txn.paymentDate}</div>
                   </td>
                   <td className="p-3">{txn.total}</td>
-                  <td className="px-4 py-2 space-x-2 text-xs text-blue-600">
-                    <button onClick={() => assignAwbHandler(txn.id)}>AWB</button>
-                    <button onClick={() => trackShipmentHandler(txn.id)}>Track</button>
-                    <button onClick={() => downloadLabelHandler(txn.id)}>Label</button>
-                  </td>
                   <td className="p-3">
                     <div className="flex flex-col sm:flex-row gap-2">
-                      <button className="text-indigo-600 hover:underline flex items-center gap-1"  onClick={() => openDetails(txn)}>
-                        <CheckSquare size={16} /> Details
-                      </button>
-                      <button className="text-indigo-600 hover:underline flex items-center gap-1">
-                        <ArrowLeftRight size={16} /> Update
+                      <button className="text-indigo-600 hover:underline flex items-center gap-1" onClick={() => openDetails(txn)}>
+                        <CheckSquare size={16} />View Details
                       </button>
                     </div>
                   </td>
@@ -343,17 +283,15 @@ console.log(transactions);
         </table>
       </div>
 
-      <div className="mt-4 text-gray-800 text-sm">
-        AWB: <span className="text-gray-400">AWB number is a unique tracking number assigned to a shipment when it is booked through a courier</span>
-      </div>
       <div className="mt-4 text-gray-500 text-sm">
         Showing {filteredTransactions.length} of {transactions.length} entries
       </div>
+
       <OrderDetailsModal
-  open={isModalOpen}
-  onClose={() => setModalOpen(false)}
-  order={selectedOrder}
-/>
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        order={selectedOrder}
+      />
     </div>
   );
 }
