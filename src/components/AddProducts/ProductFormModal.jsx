@@ -29,10 +29,12 @@ const ProductFormModal = () => {
   const [productInfo, setProductInfo] = useState({
     productId:"", // auto generate
     productName: "",
+    tamilName: "", 
     category: "",
   });
   const [productDetails, setProductDetails] = useState({
     description: "",
+    tamilDescription: "", 
     videoUrl: "",
     cutType:[],
     shelfLife: "",
@@ -108,9 +110,11 @@ const ProductFormModal = () => {
         productId: productInfo.productId,
         images: uploadedPhotoUrls,
         name: productInfo.productName,
+        tamilName: productInfo.tamilName,
         category: productInfo.category,
         productVideoUrl: productDetails.videoUrl,
         description: productDetails.description,
+        tamilDescription: productDetails.tamilDescription,
         cutType: Array.isArray(productDetails.cutType) ? productDetails.cutType : [], // ✅ force array
         shelfLife: productDetails.shelfLife,
         storageInstructions: productDetails.storageInstructions,
@@ -155,6 +159,8 @@ const ProductFormModal = () => {
     setProductName={(val) =>
       setProductInfo((prev) => ({ ...prev, productName: val }))
     }
+    tamilName={productInfo.tamilName}   // ✅ Pass
+  setTamilName={(val) => setProductInfo((prev) => ({ ...prev, tamilName: val }))}
     category={productInfo.category}
     setCategory={(val) =>
       setProductInfo((prev) => ({ ...prev, category: val }))
@@ -168,6 +174,10 @@ const ProductFormModal = () => {
   description={productDetails.description}
   setDescription={(val) =>
     setProductDetails((prev) => ({ ...prev, description: val }))
+  }
+  tamilDescription={productDetails.tamilDescription}   // ✅ new
+  setTamilDescription={(val) =>
+    setProductDetails((prev) => ({ ...prev, tamilDescription: val }))
   }
   videoUrl={productDetails.videoUrl}
   setVideoUrl={(val) =>

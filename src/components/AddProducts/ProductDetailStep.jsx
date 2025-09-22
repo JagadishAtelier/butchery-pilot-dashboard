@@ -14,6 +14,8 @@ const meatCuts = [
 const ProductDetailStep = ({
   description,
   setDescription,
+  tamilDescription,
+  setTamilDescription,
   cutType = [], // default to empty array
   setCutType,
   shelfLife,
@@ -73,6 +75,23 @@ const ProductDetailStep = ({
               />
             </div>
           </div>
+
+          {/* Tamil Description */}
+<div className="flex flex-col xl:flex-row items-start">
+  <div className="w-full xl:w-64 xl:mr-10">
+    <div className="font-medium">Tamil Description</div>
+  </div>
+  <div className="mt-3 xl:mt-0 flex-1 w-full">
+    <textarea
+      value={tamilDescription}
+      onChange={(e) => setTamilDescription(e.target.value)}
+      rows={6}
+      placeholder="உங்கள் தயாரிப்பைப் தமிழில் விவரிக்கவும்..."
+      className="w-full rounded-md border px-3 py-2 bg-white text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+    />
+  </div>
+</div>
+
 
           {/* Cut Type */}
           <div className="flex flex-col xl:flex-row items-start relative">

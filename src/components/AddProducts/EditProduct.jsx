@@ -16,8 +16,8 @@ const EditProduct = () => {
   const navigate = useNavigate();
 
   const [productPhotos, setProductPhotos] = useState([]);
-  const [productInfo, setProductInfo] = useState({ productId: "", productName: "", category: "" });
-  const [productDetails, setProductDetails] = useState({ condition: "", description: "", videoUrl: "", cutType: "", shelfLife: "", storageInstructions: "", certifications: [] });
+  const [productInfo, setProductInfo] = useState({ productId: "", productName: "",tamilName: "",  category: "" });
+  const [productDetails, setProductDetails] = useState({ condition: "", description: "",tamilDescription: "",  videoUrl: "", cutType: "", shelfLife: "", storageInstructions: "", certifications: [] });
   const [variants, setVariants] = useState([]);
   const [weightOptions, setWeightOptions] = useState([]);
   const [productManagementData, setProductManagementData] = useState({ isActive: false, stock: "", sku: "", price: "" });
@@ -34,12 +34,14 @@ const EditProduct = () => {
         setProductInfo({
           productId: data.productId || "",
           productName: data.name || "",
+          tamilName: data.tamilName || "",
           category: data.category || "",
         });
 
         setProductDetails({
           condition: data.condition || "",
           description: data.description || "",
+          tamilDescription: data.tamilDescription || "",
           videoUrl: data.productVideoUrl || "",
           cutType: data.cutType || "",
           shelfLife: data.shelfLife || "",
@@ -112,9 +114,11 @@ const EditProduct = () => {
         productId: productInfo.productId,
         images: uploadedPhotoUrls,
         name: productInfo.productName,
+        tamilName: productInfo.tamilName,
         category: productInfo.category,
         condition: productDetails.condition,
         description: productDetails.description,
+        tamilDescription: productDetails.tamilDescription,
         productVideoUrl: productDetails.videoUrl,
         cutType: productDetails.cutType,
         shelfLife: productDetails.shelfLife,
@@ -151,6 +155,8 @@ const EditProduct = () => {
         setProductId={(val) => setProductInfo((prev) => ({ ...prev, productId: val }))}
         productName={productInfo.productName}
         setProductName={(val) => setProductInfo((prev) => ({ ...prev, productName: val }))}
+        tamilName={productInfo.tamilName}   // ✅ Pass
+  setTamilName={(val) => setProductInfo((prev) => ({ ...prev, tamilName: val }))}
         category={productInfo.category}
         setCategory={(val) => setProductInfo((prev) => ({ ...prev, category: val }))}
       />
@@ -159,6 +165,10 @@ const EditProduct = () => {
       <ProductDetailStep
         description={productDetails.description}
         setDescription={(val) => setProductDetails((prev) => ({ ...prev, description: val }))}
+        tamilDescription={productDetails.tamilDescription}   // ✅ new
+        setTamilDescription={(val) =>
+          setProductDetails((prev) => ({ ...prev, tamilDescription: val }))
+        }
         cutType={productDetails.cutType}
         setCutType={(val) => setProductDetails((prev) => ({ ...prev, cutType: val }))}
         shelfLife={productDetails.shelfLife}
