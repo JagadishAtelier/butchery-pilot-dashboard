@@ -56,7 +56,14 @@ const EditProduct = () => {
         }, []);
         setVariants(groupedVariants);
 
-        setWeightOptions((data.weightOptions || []).map((w) => ({ id: Date.now() + Math.random(), weight: w.weight, price: w.price, stock: w.stock })));
+        setWeightOptions((data.weightOptions || []).map((w) => ({
+          id: Date.now() + Math.random(),
+          weight: w.weight,
+          price: w.price,
+          discountPrice: w.discountPrice || 0,
+          stock: w.stock
+        })));
+        
 
         setProductManagementData({
           isActive: data.status === "Active",
@@ -114,7 +121,7 @@ const EditProduct = () => {
         storageInstructions: productDetails.storageInstructions,
         certifications: productDetails.certifications,
         unit: weightShippingData.unit || "kg",
-        weightOptions: weightOptions.map((w) => ({ weight: Number(w.weight), price: Number(w.price), stock: Number(w.stock || 0) })),
+        weightOptions: weightOptions.map((w) => ({ weight: Number(w.weight), price: Number(w.price),  discountPrice: Number(w.discountPrice || 0), stock: Number(w.stock || 0) })),
         SKU: productManagementData.sku,
         status: productManagementData.isActive ? "Active" : "Inactive",
         stock: productManagementData.stock,

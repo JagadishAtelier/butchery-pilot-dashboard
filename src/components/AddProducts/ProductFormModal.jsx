@@ -39,7 +39,7 @@ const ProductFormModal = () => {
     storageInstructions: "",
   });
   const [weightOptions, setWeightOptions] = useState([
-    { id: Date.now(), weight: "", price: "", stock: "" },
+    { id: Date.now(), weight: "", price: "", discountPrice: "", stock: "" }
   ]);
   const [productManagementData, setProductManagementData] = useState({
     isActive: false,
@@ -63,7 +63,7 @@ const ProductFormModal = () => {
     setProductManagementData(data);
 
   const addWeightOption = () =>
-    setWeightOptions([...weightOptions, { id: Date.now(), weight: "", price: "", stock: "" }]);
+    setWeightOptions([...weightOptions, { id: Date.now(), weight: "", price: "", discountPrice: "", stock: "" }]);
 
   const updateWeightOption = (id, field, value) =>
     setWeightOptions(weightOptions.map((opt) =>
@@ -118,6 +118,7 @@ const ProductFormModal = () => {
         weightOptions: weightOptions.map((w) => ({
           weight: Number(w.weight),
           price: Number(w.price),
+          discountPrice: Number(w.discountPrice || 0),
           stock: Number(w.stock || 0),
         })),
         SKU: productManagementData.sku,

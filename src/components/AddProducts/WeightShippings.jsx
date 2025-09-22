@@ -26,7 +26,7 @@ const WeightShippings = ({
   const addWeight = () => {
     if (addOption) addOption();
     else if (setWeightOptions) {
-      setWeightOptions(prev => [...prev, { id: Date.now(), weight: "", price: "", stock: "" }]);
+      setWeightOptions(prev => [...prev, { id: Date.now(), weight: "", price: "", discountPrice: "", stock: "" }]);
     }
   };
 
@@ -61,13 +61,14 @@ const WeightShippings = ({
               onChange={(e) => updateWeight(opt.id, "price", e.target.value)}
               className="h-10 rounded-md border px-3 w-1/4"
             />
-            <input
-              type="number"
-              placeholder="Discount Price"
-              value={opt.price}
-              onChange={(e) => updateWeight(opt.id, "price", e.target.value)}
-              className="h-10 rounded-md border px-3 w-1/4"
-            />
+<input
+  type="number"
+  placeholder="Discount Price"
+  value={opt.discountPrice || ""}
+  onChange={(e) => updateWeight(opt.id, "discountPrice", e.target.value)}
+  className="h-10 rounded-md border px-3 w-1/4"
+/>
+
             <input
               type="number"
               placeholder="Stock"
