@@ -56,14 +56,14 @@ const WeightShippings = ({
             />
             <input
               type="number"
-              placeholder="Actual Price"
+              placeholder="Selling Price"
               value={opt.price}
               onChange={(e) => updateWeight(opt.id, "price", e.target.value)}
               className="h-10 rounded-md border px-3 w-1/4"
             />
 <input
   type="number"
-  placeholder="Discount Price"
+  placeholder="Actual Price"
   value={opt.discountPrice || ""}
   onChange={(e) => updateWeight(opt.id, "discountPrice", e.target.value)}
   className="h-10 rounded-md border px-3 w-1/4"

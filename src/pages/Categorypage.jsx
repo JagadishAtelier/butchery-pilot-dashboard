@@ -140,83 +140,113 @@ export default function CategoryPage() {
       </div>
 
       {/* Edit Modal */}
-      {editingCategory && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-md shadow w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">Edit Category</h2>
+{/* Edit Modal */}
+{editingCategory && (
+  <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-md shadow w-full max-w-md">
+      <h2 className="text-lg font-semibold mb-4">Edit Category</h2>
 
-            {/* Image Upload with hover icon */}
-            <div
-              onClick={() => fileInputRef.current.click()}
-              onDrop={(e) => {
-                e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                if (file) handleFileUpload(file);
-              }}
-              onDragOver={(e) => e.preventDefault()}
-              className="group relative w-full h-40 border-2 border-dashed rounded flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 cursor-pointer mb-4 overflow-hidden"
-            >
-              {(previewImage || editingCategory.image) ? (
-                <img
-                  src={previewImage || editingCategory.image}
-                  alt="Preview"
-                  className="h-full w-full object-contain"
-                />
-              ) : (
-                <p>Drag & drop an image here, or click to upload</p>
-              )}
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                <UploadCloud size={32} />
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={(e) => handleFileUpload(e.target.files[0])}
-                className="hidden"
-              />
-            </div>
-
-            <input
-              type="text"
-              value={editingCategory.name}
-              onChange={(e) =>
-                setEditingCategory({ ...editingCategory, name: e.target.value })
-              }
-              className="w-full p-2 mb-4 border rounded"
-              placeholder="Category Name"
-            />
-            <textarea
-              value={editingCategory.description}
-              onChange={(e) =>
-                setEditingCategory({
-                  ...editingCategory,
-                  description: e.target.value,
-                })
-              }
-              className="w-full p-2 mb-4 border rounded"
-              placeholder="Description"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setEditingCategory(null);
-                  setPreviewImage(null);
-                }}
-                className="px-4 py-2 text-gray-600"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleEdit}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Save
-              </button>
-            </div>
-          </div>
+      {/* Image Upload */}
+      <div
+        onClick={() => fileInputRef.current.click()}
+        onDrop={(e) => {
+          e.preventDefault();
+          const file = e.dataTransfer.files[0];
+          if (file) handleFileUpload(file);
+        }}
+        onDragOver={(e) => e.preventDefault()}
+        className="group relative w-full h-40 border-2 border-dashed rounded flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 cursor-pointer mb-4 overflow-hidden"
+      >
+        {(previewImage || editingCategory.image) ? (
+          <img
+            src={previewImage || editingCategory.image}
+            alt="Preview"
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          <p>Drag & drop an image here, or click to upload</p>
+        )}
+        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+          <UploadCloud size={32} />
         </div>
-      )}
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={(e) => handleFileUpload(e.target.files[0])}
+          className="hidden"
+        />
+      </div>
+
+      {/* English Name */}
+      <input
+        type="text"
+        value={editingCategory.name}
+        onChange={(e) =>
+          setEditingCategory({ ...editingCategory, name: e.target.value })
+        }
+        className="w-full p-2 mb-4 border rounded"
+        placeholder="Category Name (English)"
+      />
+
+      {/* Tamil Name */}
+      <input
+        type="text"
+        value={editingCategory.tamilName || ""}
+        onChange={(e) =>
+          setEditingCategory({ ...editingCategory, tamilName: e.target.value })
+        }
+        className="w-full p-2 mb-4 border rounded"
+        placeholder="Category Name (Tamil)"
+      />
+
+      {/* English Description */}
+      <textarea
+        value={editingCategory.description}
+        onChange={(e) =>
+          setEditingCategory({
+            ...editingCategory,
+            description: e.target.value,
+          })
+        }
+        className="w-full p-2 mb-4 border rounded"
+        placeholder="Description (English)"
+      />
+
+      {/* Tamil Description */}
+      <textarea
+        value={editingCategory.tamilDescription || ""}
+        onChange={(e) =>
+          setEditingCategory({
+            ...editingCategory,
+            tamilDescription: e.target.value,
+          })
+        }
+        className="w-full p-2 mb-4 border rounded"
+        placeholder="Description (Tamil)"
+      />
+
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => {
+            setEditingCategory(null);
+            setPreviewImage(null);
+          }}
+          className="px-4 py-2 text-gray-600"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleEdit}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       <CreateCategoryModal
         open={showCreateModal}

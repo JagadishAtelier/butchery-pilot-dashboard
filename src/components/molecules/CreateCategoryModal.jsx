@@ -104,22 +104,20 @@ export default function CreateCategoryModal({ open, onClose, onCreate }) {
           placeholder="Category Name (Tamil)"
           className="w-full p-2 mb-3 border rounded"
         />
-
-                {/* Tamil Description */}
-                <textarea
-          name="tamilDescription"
-          value={formData.tamilDescription}
-          onChange={handleChange}
-          placeholder="Description (Tamil)"
-          className="w-full p-2 mb-3 border rounded"
-        />
-
-
         <textarea
           name="description"
           value={formData.description}
           onChange={handleChange}
           placeholder="Description"
+          className="w-full p-2 mb-3 border rounded"
+        />
+
+                        {/* Tamil Description */}
+                        <textarea
+          name="tamilDescription"
+          value={formData.tamilDescription}
+          onChange={handleChange}
+          placeholder="Description (Tamil)"
           className="w-full p-2 mb-3 border rounded"
         />
 
