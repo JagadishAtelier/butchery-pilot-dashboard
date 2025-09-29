@@ -118,6 +118,16 @@ function RegisterPage() {
           </div>
         </div>
 
+                {/* Vehicle Input */}
+        <div className="flex flex-col gap-2">
+          <p className=" font-medium">Vehicle Number</p>
+          <input
+            type="text"
+            placeholder="Enter Vehicle Number"
+            className="py-3 ps-5 rounded-md border-0 outline-none"
+          />
+        </div>
+
         {/* Submit Button */}
         <button
           type="submit"
