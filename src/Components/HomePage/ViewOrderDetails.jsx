@@ -2,7 +2,7 @@ import React from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-
+import { useNavigate } from "react-router-dom";
 // Fix default marker issue
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
@@ -17,10 +17,11 @@ const customIcon = new L.Icon({
 });
 
 function ViewOrderDetails() {
+    const navigate = useNavigate()
   const position = [25.276987, 55.296249];
 
   return (
-    <div>
+    <div className="">
     <div className="">
       <MapContainer
         center={position}
@@ -44,7 +45,7 @@ function ViewOrderDetails() {
                     <div className='bg-blue-50 p-2 rounded-full w-fit' ><FaBox/></div>
                     <p className='text-sm'>#ORD1</p>
                 </div>
-                <p className='text-sm text-white bg-red-700 py-2 px-5 rounded-3xl'>5min ago</p>
+                <button onClick={()=>navigate('/accpted-order')} className='border border-gray-200 bg-red-700 text-white py-1 px-5 rounded-3xl'>Accept order</button>
     </div>
 
     <div className="flex justify-between my-5">
