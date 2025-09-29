@@ -52,6 +52,7 @@ function Login() {
       </form>
     </div>
     <div className='bg-white fixed bottom-0 w-full h-1/4 text-center px-5 pt-5 pb-10'>
+      <div className='bg-white relative -top-7 mx-auto h-5 w-1/2 rounded-2xl'></div>
           <p>Don't have an account</p>
         <button onClick={()=>navigate('/register')}
           className=" text-black border border-gray-200 py-3 rounded-md transition w-full"
