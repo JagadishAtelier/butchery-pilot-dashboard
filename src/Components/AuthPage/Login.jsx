@@ -1,10 +1,12 @@
 import React from 'react'
 import { FaKey, FaUser } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import image from "../../assets/d1.png";
 function Login() {
   const navigate = useNavigate()
   return (
-    <div className='bg-blue-50 min-h-screen pt-20'>
+    <div className='bg-blue-50 min-h-screen pt-24 relative'>
+      <img src={image}  className="mx-auto absolute opacity-10 w-full"/>
     <div className="flex justify-center items-center">
       {/* Form */}
       <form className="px-5 flex flex-col gap-5 w-full max-w-md">
