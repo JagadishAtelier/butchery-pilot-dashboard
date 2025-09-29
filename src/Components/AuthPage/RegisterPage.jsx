@@ -136,7 +136,7 @@ function RegisterPage() {
           Register
         </button>
       </form>
-    <BottomNav/>
+    {/* <BottomNav/> */}
     </div>
   );
 }
