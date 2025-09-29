@@ -5,7 +5,7 @@ import logo from '../assets/images/logo.svg'
 function LoginPage() {
   const  navigate = useNavigate()
   return (
-    <div className="relative h-screen flex justify-center items-center bg-gray-100">
+    <div className="relative h-screen flex justify-center items-center bg-gray-100 pb-5">
       <div
         className="absolute bottom-0 left-0 w-full h-1/2 bg-red-700 z-0
                    [clip-path:polygon(0_40%,100%_0,100%_100%,0%_100%)]"
