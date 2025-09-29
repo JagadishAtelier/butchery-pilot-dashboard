@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import { FaBox, FaGift, FaMapMarker } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 const assignedData = [
     { orderId : "ORD1" ,
     orderedTime : "5min ago",
@@ -80,6 +81,7 @@ const pendingData = [
     },
   ]
 function TaskManagement() {
+    const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState("Assigned")
 
     const tabs = {
@@ -112,6 +114,7 @@ function TaskManagement() {
         {tabs[activeTab].map((order) => (
           <div
             key={order.orderId}
+            onClick={()=>navigate('/order-details')}
             className={`bg-blue-50 mx-2 p-3 mb-3 rounded shadow-sm `}
           >
             <div className='flex justify-between items-center'>
