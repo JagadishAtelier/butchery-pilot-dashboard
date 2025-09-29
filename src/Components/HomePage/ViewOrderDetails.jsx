@@ -85,7 +85,7 @@ function ViewOrderDetails() {
         </div>
     </div>
 
-    <div className="flex my-5 gap-2">
+    <div className="flex mt-5 gap-2 mb-24">
         <button className="border border-gray-300 w-full py-3 rounded-3xl">Chat with support</button>
         <button className="border border-gray-300 rounded-full p-4">
             <FaPhone/>
