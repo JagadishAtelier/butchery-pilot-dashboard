@@ -44,9 +44,8 @@ function Login() {
           </div>
         </div>
         <button
-          type="submit"
           onClick={()=>navigate('/home')}
-          className="bg-red-700 text-white py-3 rounded-md transition hover:bg-red-800"
+          className="bg-red-700 text-white py-3 rounded-md transition hover:bg-red-800 relative z-10"
         >
           Login
         </button>
