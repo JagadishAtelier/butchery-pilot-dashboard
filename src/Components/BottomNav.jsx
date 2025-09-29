@@ -10,7 +10,7 @@ function BottomNav() {
       </div>
       <div className='flex flex-col gap-1 items-center text-gray-800'>
         <FaList/>
-        <p className='text-sm'>New Order</p>
+        <p className='text-sm'>Order</p>
       </div>
       <div className='flex flex-col gap-1 items-center text-gray-800'>
         <FaTruck/>

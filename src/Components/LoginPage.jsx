@@ -10,7 +10,7 @@ function LoginPage() {
                    [clip-path:polygon(0_40%,100%_0,100%_100%,0%_100%)]"
       ></div>
       <div className="relative z-10 text-center">
-        <img src={image} alt="Delivery" className="mx-auto " />
+        <img src={image} alt="Delivery" className="mx-auto h-[60vh]"/>
         <h1 className="text-white text-2xl font-bold">Welcome to Delivery</h1>
         <p className="text-white text-base w-3/4 mx-auto mt-5">
   Manage your delivery partners on your finger tips.
