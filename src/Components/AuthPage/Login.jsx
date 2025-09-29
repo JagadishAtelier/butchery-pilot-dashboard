@@ -32,7 +32,7 @@ function Login() {
         <div className="flex flex-col gap-2">
            <div className='flex justify-between'> 
           <p className="font-medium">Password</p>
-          <a href='/forgot-pass' className="font-base border-b-2 border-gray-300">Forgot Password</a>
+          <a href='/forgot-pass' className="text-sm border-b-2 border-gray-300">Forgot Password</a>
           </div>
           <div className="relative">
             <FaKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -45,6 +45,7 @@ function Login() {
         </div>
         <button
           type="submit"
+          onClick={()=>navigate('/home')}
           className="bg-red-700 text-white py-3 rounded-md transition hover:bg-red-800"
         >
           Login
@@ -61,6 +62,7 @@ function Login() {
         >
           Register
         </button>
+        <p className='text-sm my-2'>Powerd by Atelier</p>
         </div>
     </div>
   )

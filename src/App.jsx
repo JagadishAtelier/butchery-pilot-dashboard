@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import LoginPage from './Components/LoginPage';
 import RegisterPage from './Components/AuthPage/RegisterPage';
 import Login from './Components/AuthPage/Login';
+import Home from './Components/HomePage/Home';
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/' element={<LoginPage/>}/>
         <Route path='/register' element={<RegisterPage/>}/>
+        <Route path='/home' element={<Home/>}/>
       </Routes>
       <Toaster position="bottom-center" />
       {/* <ChatBot/> */}
