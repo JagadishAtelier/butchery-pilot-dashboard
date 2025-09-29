@@ -20,7 +20,7 @@ function RegisterPage() {
           <FaChevronLeft className="text-gray-600 cursor-pointer" />
           <h1 className="text-lg font-medium">Register</h1>
         </div>
-        <p className="text-base text-red-500 cursor-pointer">Cancel</p>
+        <p className="text-base cursor-pointer">Cancel</p>
       </div>
 
       {/* Form */}
