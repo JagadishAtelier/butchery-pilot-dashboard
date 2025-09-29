@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function Login() {
   const navigate = useNavigate()
   return (
-    <div className='bg-blue-50 min-h-screen pt-10'>
+    <div className='bg-blue-50 min-h-screen pt-20'>
     <div className="flex justify-center items-center">
       {/* Form */}
       <form className="px-5 flex flex-col gap-5 w-full max-w-md">

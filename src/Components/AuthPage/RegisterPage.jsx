@@ -127,15 +127,16 @@ function RegisterPage() {
             className="py-3 ps-5 rounded-md border-0 outline-none"
           />
         </div>
+      </form>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="bg-red-700 text-white py-3 rounded-md transition"
+      <div className='bg-white fixed bottom-0 w-full h-1/4 text-center px-5 pt-5 pb-10'>
+      <div className='bg-white relative -top-7 mx-auto h-5 w-1/2 rounded-2xl'></div>
+        <button onClick={()=>navigate('/register')}
+          className=" bg-red-700 text-white py-3 rounded-md transition w-full"
         >
           Register
         </button>
-      </form>
+        </div>
     {/* <BottomNav/> */}
     </div>
   );
