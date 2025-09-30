@@ -110,12 +110,11 @@ function TaskManagement() {
       </div>
 
       {/* Orders List */}
-      <div>
+      <div className='mb-24'>
         {tabs[activeTab].map((order) => (
           <div
             key={order.orderId}
-            onClick={()=>navigate('/order-details')}
-            className={`bg-blue-50 mx-2 p-3 mb-3 rounded shadow-sm `}
+            className={`bg-blue-50 mx-2 p-3 mb-3 rounded shadow-sm`}
           >
             <div className='flex justify-between items-center'>
                 <div className='flex gap-2 items-center'>
@@ -146,7 +145,7 @@ function TaskManagement() {
     </div>
 <div className='flex justify-between mt-3'>
     <button className='border border-gray-200 bg-white py-1 px-5 rounded-3xl'>skip</button>
-    <button className='border border-gray-200 bg-red-700 text-white py-1 px-5 rounded-3xl'>Accept order</button>
+    <button onClick={()=>navigate('/order-details')} className='border border-gray-200 bg-red-700 text-white py-1 px-5 rounded-3xl'>Accept order</button>
     </div>
 
 

@@ -3,7 +3,7 @@ import { FaBox, FaCheckCircle, FaHome, FaList, FaNotesMedical, FaPlus, FaTruck, 
 
 function BottomNav() {
   return (
-    <div className='flex gap-3 bg-white fixed bottom-0 justify-around w-full py-5 px-5'>
+    <div className='flex gap-3 bg-white fixed bottom-0 justify-around w-full py-5 px-5 border-t border-gray-300'>
       <div className='flex flex-col gap-1 items-center text-gray-800'>
         <FaBox/>
       </div>

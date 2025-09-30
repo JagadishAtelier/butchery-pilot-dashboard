@@ -45,7 +45,7 @@ function ViewOrderDetails() {
                     <div className='bg-blue-50 p-2 rounded-full w-fit' ><FaBox/></div>
                     <p className='text-sm'>#ORD1</p>
                 </div>
-                <button onClick={()=>navigate('/accpted-order')} className='border border-gray-200 bg-red-700 text-white py-1 px-5 rounded-3xl'>Accept order</button>
+                <button onClick={()=>navigate('/go-to-store')} className='border border-gray-200 bg-red-700 text-white py-1 px-5 rounded-3xl'>Go To Store</button>
     </div>
 
     <div className="flex justify-between my-5">

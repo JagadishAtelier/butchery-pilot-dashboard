@@ -1,135 +1,201 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
-import { FaBook, FaBox, FaChartBar, FaChevronRight, FaLocationArrow, FaMapMarked, FaMapMarker, FaPhone } from 'react-icons/fa';
+import { 
+  FaBook, FaBox, FaChevronRight, 
+  FaMapMarker, FaPhone 
+} from 'react-icons/fa';
 import BottomNav from '../BottomNav';
 
 const customIcon = new L.Icon({
-    iconUrl: markerIconPng,
-    shadowUrl: markerShadowPng,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
+  iconUrl: markerIconPng,
+  shadowUrl: markerShadowPng,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 
 function TakeOrder() {
-    const position = [25.276987, 55.296249];
+  const [orderPicked, setOrderPicked] = useState(false); 
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [sliderPosition, setSliderPosition] = useState(0);
+  const position = [25.276987, 55.296249];
+
+  const handleSlide = (e) => {
+    const containerWidth = e.currentTarget.offsetWidth;
+    const buttonWidth = 50; // approx width of the slider button
+    const maxSlide = containerWidth - buttonWidth;
+
+    if (sliderPosition >= maxSlide) {
+      setShowOTPModal(true); // open OTP modal
+    }
+  };
 
   return (
     <div>
-    <div className="">
-      <MapContainer
-        center={position}
-        zoom={13}
-        scrollWheelZoom={true}
-        className="w-full h-[50vh] rounded-xl shadow-md"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Marker position={position} icon={customIcon}>
-          <Popup>Delivery Location</Popup>
-        </Marker>
-      </MapContainer>
-    </div>
-
-    <div className="px-2 pt-5">
-    <div className="flex justify-between my-5">
-        <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold">2.8 mile</p>
-            <h1 className="text-sm ">distance</h1>
+      {/* Top Header */}
+      <div className='flex justify-between items-center px-3 my-5'>
+        <h1 className='text-lg font-semibold'>Pickup Order</h1>
+        <div className='flex gap-2 items-center'>
+          <div className='bg-blue-50 p-2 rounded-full w-fit'><FaBox/></div>
+          <p className='text-sm'>#ORD1</p>
         </div>
-        <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold">2:23 min</p>
-            <h1 className="text-sm ">Time left</h1>
+      </div>
+
+      {/* Map is always visible */}
+      <div className="px-3">
+        <MapContainer
+          center={position}
+          zoom={13}
+          scrollWheelZoom={true}
+          className="w-full h-[50vh] rounded-xl shadow-md"
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <Marker position={position} icon={customIcon}>
+            <Popup>Delivery Location</Popup>
+          </Marker>
+        </MapContainer>
+      </div>
+
+      {/* Below the map — changes depending on orderPicked */}
+      <div className="px-3 pt-5">
+        {!orderPicked ? (
+          // Step 1: Before picking
+          <>
+            <p className='text-base mb-3'>Click the button to start your delivery</p>
+            <button 
+              className='w-full bg-red-700 py-2 rounded-md text-white mb-5'
+              onClick={() => setOrderPicked(true)}
+            >
+              Order Picked
+            </button>
+          </>
+        ) : (
+          // Step 2: After picking
+          <>
+            {/* Distance / Time / Arrival */}
+            <div className="flex justify-between my-5">
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-semibold">2.8 mile</p>
+                <h1 className="text-sm">Distance</h1>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-semibold">2:23 min</p>
+                <h1 className="text-sm">Time left</h1>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-semibold">9:44 AM</p>
+                <h1 className="text-sm">Arrival</h1>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="flex items-center justify-between w-full gap-2 my-5">
+              <FaBox className="text-red-700" />
+              <div className="flex-1 border-2 border-gray-200"></div>
+              <FaChevronRight/>
+              <div className="flex-1 border-2 border-red-700"></div>
+              <FaMapMarker className="text-red-700" />
+            </div>
+
+            {/* Order Info */}
+            <div className='flex justify-between items-center border-b border-gray-200 pb-5 my-5'>
+              <div className='flex gap-2 items-center'>
+                <div className='bg-blue-50 p-2 rounded-full w-fit'><FaBox/></div>
+                <p className='text-sm'>#ORD1</p>
+              </div>
+              <button className='border border-gray-200 bg-red-700 text-white py-1 px-5 rounded-3xl'>10AM - 13AM</button>
+            </div>
+
+            {/* Customer Info */}
+            <div className='flex justify-between items-center'>
+              <div className='flex flex-col gap-2 items-start'>
+                <p className='text-sm mb-0'>Customer</p>
+                <h1 className='text-base font-semibold'>Holden</h1>
+              </div>
+              <div className='p-3 rounded-full bg-red-700'><FaBook className='text-white'/></div>
+            </div>
+
+            {/* Delivery Address */}
+            <div className='flex justify-between items-center my-5'>
+              <div className='flex flex-col gap-2 items-start'>
+                <p className='text-sm mb-0'>Delivery Address</p>
+                <div className='flex gap-2 items-center'><FaMapMarker/><h1 className='text-base font-semibold'>1234, Royal Ln, Mesa</h1></div>
+              </div>
+            </div>
+
+            {/* Order Summary */}
+            <div className="bg-blue-50 py-3 px-5 rounded-2xl flex flex-col gap-2 mb-5">
+              <div className="flex "><p className="w-full">Quantity</p><p className="w-full font-semibold">1</p></div>
+              <div className="flex "><p className="w-full">Weight</p><p className="w-full font-semibold">2kg</p></div>
+              <div className="flex "><p className="w-full">Order Cost</p><p className="w-full font-semibold">₹ 250</p></div>
+              <div className="flex "><p className="w-full">Payment Method</p><p className="w-full font-semibold">Card</p></div>
+              <div className="flex "><p className="w-full">Status</p><p className="w-full font-semibold">Paid</p></div>
+            </div>
+
+            {/* Support / Call */}
+            <div className="flex mt-5 gap-2">
+              <button className="border border-gray-300 w-full py-3 rounded-3xl">Chat with support</button>
+              <button className="bg-red-700 text-white rounded-full p-4"><FaPhone/></button>
+            </div>
+
+            {/* Slide to confirm */}
+            <div 
+              className="relative mt-5 mb-24 bg-black rounded-3xl text-white py-3 flex items-center"
+              onMouseUp={handleSlide}
+              onTouchEnd={handleSlide}
+            >
+              <div
+                className="absolute top-0 left-0 bg-red-700 rounded-full p-4 flex items-center cursor-pointer"
+                style={{ transform: `translateX(${sliderPosition}px)` }}
+                draggable
+                onDrag={(e) => {
+                  if (e.clientX > 0) {
+                    setSliderPosition(e.clientX - 50);
+                  }
+                }}
+              >
+                <FaChevronRight/><FaChevronRight/>
+              </div>
+              <p className="w-full text-center">Slide to confirm delivery</p>
+            </div>
+          </>
+        )}
+      </div>
+
+      {showOTPModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-lg w-80 p-5">
+            <h2 className="text-lg font-semibold mb-3">Enter OTP</h2>
+            <input 
+              type="text" 
+              placeholder="Enter OTP" 
+              className="border w-full p-2 rounded-md mb-4"
+            />
+            <div className="flex justify-between">
+              <button 
+                onClick={() => setShowOTPModal(false)} 
+                className="px-4 py-2 border rounded-md"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => { setShowOTPModal(false); alert("Delivery Confirmed ✅") }}
+                className="px-4 py-2 bg-red-700 text-white rounded-md"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-2">
-            <p className="text-sm font-semibold">9:44 AM</p>
-            <h1 className="text-sm">Arrival</h1>
-        </div>
-    </div>
+      )}
 
-    <div className="flex items-center justify-between w-full gap-2 my-5">
-  <FaBox className="text-red-700" />
-  <div className="flex-1 border-2 border-gray-200"></div>
-
-<FaChevronRight/>
-
-  <div className="flex-1 border-2 border-red-700"></div>
-
-  <FaMapMarker className="text-red-700" />
-</div>
-
-
-<div className='flex justify-between items-center border-b border-gray-200 pb-5 my-5'>
-                <div className='flex gap-2 items-center'>
-                    <div className='bg-blue-50 p-2 rounded-full w-fit' ><FaBox/></div>
-                    <p className='text-sm'>#ORD1</p>
-                </div>
-                <button onClick={()=>navigate('/accpted-order')} className='border border-gray-200 bg-red-700 text-white py-1 px-5 rounded-3xl'>10AM - 13AM</button>
-    </div>
-
-<div className='flex justify-between items-center'>
-    <div className='flex flex-col gap-2 items-start'>
-        <p className='text-sm mb-0'>Customer</p>
-        <h1 className='text-base font-semibold'>Holden</h1>
-    </div>
-    <div className='p-3 rounded-full bg-red-700'><FaBook className='text-white'/></div>
-</div>
-
-
-<div className='flex justify-between items-center my-5'>
-    <div className='flex flex-col gap-2 items-start'>
-        <p className='text-sm mb-0'>Delivery Address</p>
-        <div className='flex gap-2 items-center'><FaMapMarker/><h1 className='text-base font-semibold'>1234,Royal Ln,Mesa</h1></div>
-    </div>
-</div>
-
-<div className="bg-blue-50 py-3 px-5 rounded-2xl flex flex-col gap-2 mb-5">
-        <div className="flex ">
-            <p className="w-full">Quantity</p>
-            <p className="w-full font-semibold">1</p>
-        </div>
-        <div className="flex ">
-            <p className="w-full">Weight</p>
-            <p className="w-full font-semibold">2kg</p>
-        </div>
-        <div className="flex ">
-            <p className="w-full">Order Cost</p>
-            <p className="w-full font-semibold">₹ 250</p>
-        </div>
-        <div className="flex ">
-            <p className="w-full">Payment Method</p>
-            <p className="w-full font-semibold">Card</p>
-        </div>
-        <div className="flex ">
-            <p className="w-full">Status</p>
-            <p className="w-full font-semibold">Paid</p>
-        </div>
-    </div>
-
-    <div className="flex mt-5 gap-2">
-        <button className="border border-gray-300 w-full py-3 rounded-3xl">Chat with support</button>
-        <button className="bg-red-700 text-white rounded-full p-4">
-            <FaPhone/>
-        </button>
-    </div>
-
-    <div className="flex mt-5 mb-24 relative">
-    <button className="bg-red-700 text-white rounded-full p-4 flex absolute top-0 z-10">
-            <FaChevronRight/>
-            <FaChevronRight/>
-
-        </button>
-        <button className="bg-black w-full py-3 rounded-3xl text-white">Slide to confirm delivery</button>
-    </div>
-
-
-    </div>
-<BottomNav/>
+      <BottomNav/>
     </div>
   )
 }
