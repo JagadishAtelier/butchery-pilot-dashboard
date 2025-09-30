@@ -144,7 +144,7 @@ function TakeOrder() {
               <button className="bg-red-700 text-white rounded-full p-4"><FaPhone/></button>
             </div>
 
-          <SlideToConfirm onConfirm={() => setShowOTPModal(true)} />
+          <SlideToConfirm onConfirm={() => setShowOtpModal(true)} />
           <OtpModal
         isOpen={showOtpModal}
         onClose={() => setShowOtpModal(false)}
