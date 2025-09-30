@@ -18,7 +18,7 @@ const customIcon = new L.Icon({
 
 function StoreLocation() {
     const navigate = useNavigate()
-    const position = [25.276987, 55.296249];
+    const position = [11.0168, 76.9558]; // Coimbatore city center
   return (
     <div>
         <div className='flex justify-between items-center px-3 my-5'>

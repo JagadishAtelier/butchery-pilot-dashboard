@@ -24,7 +24,7 @@ function TakeOrder() {
   const [orderPicked, setOrderPicked] = useState(false); 
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(0);
-  const position = [25.276987, 55.296249];
+  const position = [11.0168, 76.9558]; // Coimbatore city center
 
   const handleOtpVerify = (otp) => {
     console.log("OTP entered:", otp);
