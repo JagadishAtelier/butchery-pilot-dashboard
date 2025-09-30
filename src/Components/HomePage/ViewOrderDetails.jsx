@@ -22,12 +22,20 @@ function ViewOrderDetails() {
 
   return (
     <div className="">
-    <div className="">
+            {/* Top Header */}
+            <div className='flex justify-between items-center px-3 my-5'>
+        <h1 className='text-lg font-semibold'>View Order</h1>
+        <div className='flex gap-2 items-center'>
+          <div className='bg-blue-50 p-2 rounded-full w-fit'><FaBox/></div>
+          <p className='text-sm'>#ORD1</p>
+        </div>
+      </div>
+    <div className=" px-3">
       <MapContainer
         center={position}
         zoom={13}
         scrollWheelZoom={true}
-        className="w-full h-[50vh] rounded-xl shadow-md"
+        className="w-full h-[30vh] rounded-xl shadow-md"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
