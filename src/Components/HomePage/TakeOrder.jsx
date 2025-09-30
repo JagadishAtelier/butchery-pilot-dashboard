@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useRef  } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -9,6 +9,7 @@ import {
   FaMapMarker, FaPhone 
 } from 'react-icons/fa';
 import BottomNav from '../BottomNav';
+import SlideToConfirm from './SlideToConfirm';
 
 const customIcon = new L.Icon({
   iconUrl: markerIconPng,
@@ -144,57 +145,10 @@ function TakeOrder() {
               <button className="bg-red-700 text-white rounded-full p-4"><FaPhone/></button>
             </div>
 
-            {/* Slide to confirm */}
-            <div 
-              className="relative mt-5 mb-24 bg-black rounded-3xl text-white py-3 flex items-center"
-              onMouseUp={handleSlide}
-              onTouchEnd={handleSlide}
-            >
-              <div
-                className="absolute top-0 left-0 bg-red-700 rounded-full p-4 flex items-center cursor-pointer"
-                style={{ transform: `translateX(${sliderPosition}px)` }}
-                draggable
-                onDrag={(e) => {
-                  if (e.clientX > 0) {
-                    setSliderPosition(e.clientX - 50);
-                  }
-                }}
-              >
-                <FaChevronRight/><FaChevronRight/>
-              </div>
-              <p className="w-full text-center">Slide to confirm delivery</p>
-            </div>
+          <SlideToConfirm onConfirm={() => setShowOTPModal(true)} />
           </>
         )}
       </div>
-
-      {showOTPModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-80 p-5">
-            <h2 className="text-lg font-semibold mb-3">Enter OTP</h2>
-            <input 
-              type="text" 
-              placeholder="Enter OTP" 
-              className="border w-full p-2 rounded-md mb-4"
-            />
-            <div className="flex justify-between">
-              <button 
-                onClick={() => setShowOTPModal(false)} 
-                className="px-4 py-2 border rounded-md"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={() => { setShowOTPModal(false); alert("Delivery Confirmed ✅") }}
-                className="px-4 py-2 bg-red-700 text-white rounded-md"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <BottomNav/>
     </div>
   )
