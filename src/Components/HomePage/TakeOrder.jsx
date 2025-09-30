@@ -10,7 +10,8 @@ import {
 } from 'react-icons/fa';
 import BottomNav from '../BottomNav';
 import SlideToConfirm from './SlideToConfirm';
-
+import OtpModal from './OtpModal';
+import { useNavigate } from 'react-router-dom';
 const customIcon = new L.Icon({
   iconUrl: markerIconPng,
   shadowUrl: markerShadowPng,
@@ -19,19 +20,17 @@ const customIcon = new L.Icon({
 });
 
 function TakeOrder() {
+  const navigate = useNavigate()
   const [orderPicked, setOrderPicked] = useState(false); 
-  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(0);
   const position = [25.276987, 55.296249];
 
-  const handleSlide = (e) => {
-    const containerWidth = e.currentTarget.offsetWidth;
-    const buttonWidth = 50; // approx width of the slider button
-    const maxSlide = containerWidth - buttonWidth;
-
-    if (sliderPosition >= maxSlide) {
-      setShowOTPModal(true); // open OTP modal
-    }
+  const handleOtpVerify = (otp) => {
+    console.log("OTP entered:", otp);
+    setShowOtpModal(false);
+    alert("OTP Verified!");
+    navigate('/home')
   };
 
   return (
@@ -146,6 +145,11 @@ function TakeOrder() {
             </div>
 
           <SlideToConfirm onConfirm={() => setShowOTPModal(true)} />
+          <OtpModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onVerify={handleOtpVerify}
+      />
           </>
         )}
       </div>
