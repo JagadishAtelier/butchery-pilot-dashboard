@@ -50,7 +50,7 @@ function TakeOrder() {
           center={position}
           zoom={13}
           scrollWheelZoom={true}
-          className="w-full h-[50vh] rounded-xl shadow-md"
+          className="w-full h-[30vh] rounded-xl shadow-md"
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'

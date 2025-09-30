@@ -93,7 +93,7 @@ function TaskManagement() {
   return (
     <div>
       {/* Tabs */}
-      <div className="flex my-5 mx-2 justify-between bg-blue-50 rounded-3xl">
+      <div className="flex my-5 mx-3 justify-between bg-blue-50 rounded-3xl">
         {Object.keys(tabs).map((tab) => (
           <button
             key={tab}
@@ -114,7 +114,7 @@ function TaskManagement() {
         {tabs[activeTab].map((order) => (
           <div
             key={order.orderId}
-            className={`bg-blue-50 mx-2 p-3 mb-3 rounded shadow-sm`}
+            className={`bg-blue-50 mx-3 p-3 mb-3 rounded shadow-sm`}
           >
             <div className='flex justify-between items-center'>
                 <div className='flex gap-2 items-center'>

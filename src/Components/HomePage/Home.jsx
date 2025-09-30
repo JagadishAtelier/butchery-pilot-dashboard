@@ -6,7 +6,7 @@ import BottomNav from '../BottomNav'
 function Home() {
   return (
     <div className='md:hidden lg:hidden'>
-      <div className='bg-black mx-2 text-white p-5 rounded-lg flex flex-col gap-4'>
+      <div className='bg-black mx-3 text-white p-5 rounded-lg flex flex-col gap-4'>
         <div className='bg-gray-600 p-2 rounded-full w-fit ms-auto'><FaBell/></div>
         <h1 className='text-3xl font-semibold'>My Shipments</h1>
         <div className="flex flex-col gap-2">

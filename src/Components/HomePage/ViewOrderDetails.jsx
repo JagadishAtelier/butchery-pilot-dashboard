@@ -46,7 +46,7 @@ function ViewOrderDetails() {
         </Marker>
       </MapContainer>
     </div>
-    <div className="px-2 pt-5">
+    <div className="px-3 pt-5">
         <h1 className="text-2xl font-semibold mb-3">Order Details</h1>
     <div className='flex justify-between items-center border-b border-gray-200 pb-5'>
                 <div className='flex gap-2 items-center'>
