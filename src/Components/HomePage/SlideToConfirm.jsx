@@ -23,7 +23,8 @@ function SlideToConfirm({ onConfirm }) {
 
     const handleTouchEnd = () => {
       if (sliderPos >= maxSlide) {
-        onConfirm(); // call OTP modal
+        setSliderPos(maxSlide);
+        onConfirm(); // trigger OTP modal
       } else {
         setSliderPos(0); // reset
       }
@@ -38,17 +39,25 @@ function SlideToConfirm({ onConfirm }) {
   return (
     <div
       ref={containerRef}
-      className="relative mt-5 mb-24 bg-black rounded-3xl text-white py-3 flex items-center"
+      className="relative mt-5 mb-24 bg-black rounded-3xl text-white py-3 flex items-center overflow-hidden"
     >
+      {/* Red fill background */}
       <div
-        className="absolute top-0 left-0 bg-red-700 rounded-full p-4 flex items-center cursor-pointer select-none"
+        className="absolute top-0 left-0 bg-red-700 h-full rounded-3xl transition-all duration-100"
+        style={{ width: `${sliderPos + 50}px` }} // +50 to fill behind the button
+      />
+      
+      {/* Slider button */}
+      <div
+        className="absolute top-0 left-0 bg-red-700 rounded-full p-4 flex items-center cursor-pointer select-none z-10"
         style={{ transform: `translateX(${sliderPos}px)` }}
         onTouchStart={handleTouchStart}
       >
         <FaChevronRight />
         <FaChevronRight />
       </div>
-      <p className="w-full text-center">Slide to confirm delivery</p>
+
+      <p className="w-full text-center z-0">Slide to confirm delivery</p>
     </div>
   );
 }
