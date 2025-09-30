@@ -21,16 +21,18 @@ function SlideToConfirm({ onConfirm }) {
       setSliderPos(newX);
     };
 
-    const handleTouchEnd = () => {
-      if (sliderPos >= maxSlide) {
-        setSliderPos(maxSlide);
-        onConfirm(); // trigger OTP modal
-      } else {
-        setSliderPos(0); // reset
-      }
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
-    };
+    const handleTouchEnd = (e) => {
+        let finalX = e.changedTouches[0].clientX - startX + initialPos;
+        if (finalX >= maxSlide) {
+          setSliderPos(maxSlide);
+          onConfirm(); // modal opens
+        } else {
+          setSliderPos(0);
+        }
+        document.removeEventListener("touchmove", handleTouchMove);
+        document.removeEventListener("touchend", handleTouchEnd);
+      };
+      
 
     document.addEventListener("touchmove", handleTouchMove);
     document.addEventListener("touchend", handleTouchEnd);
